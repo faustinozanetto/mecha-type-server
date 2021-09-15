@@ -1,0 +1,149 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Account {
+  id String [pk]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  oauth_token_secret String
+  oauth_token String
+  user User [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table Session {
+  id String [pk]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+  user User [not null]
+}
+
+Table User {
+  id String [pk]
+  name String [unique, not null]
+  description String [not null, default: '']
+  email String [unique, not null]
+  emailVerified DateTime
+  image String [not null]
+  country String [not null, default: '']
+  badge UserBadge [not null, default: 'DEFAULT']
+  followedBy UserOnUser [not null]
+  following UserOnUser [not null]
+  keystrokes Int [not null, default: 0]
+  wordsPerMinute WordsPerMinute [not null]
+  charsPerMinute CharsPerMinute [not null]
+  accuracy TypingAccuracy [not null]
+  testsCompleted Int [not null, default: 0]
+  wordsWritten Int [not null, default: 0]
+  testPresets TestPreset [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  accounts Account [not null]
+  sessions Session [not null]
+}
+
+Table VerificationToken {
+  identifier String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+Table UserOnUser {
+  id String [pk]
+  child User [not null]
+  childId String [not null]
+  parent User [not null]
+  parentId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table WordsPerMinute {
+  id String [pk]
+  amount Float [not null, default: 0]
+  user User
+  userId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table CharsPerMinute {
+  id String [pk]
+  amount Float [not null, default: 0]
+  user User
+  userId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table TypingAccuracy {
+  id String [pk]
+  amount Float [not null, default: 0]
+  user User
+  userId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table TestPreset {
+  id String [pk]
+  type TestType [not null, default: 'WORDS']
+  language TestLanguage [not null, default: 'ENGLISH']
+  time Int [not null, default: 0]
+  words Int [not null, default: 25]
+  creatorImage String [not null, default: '']
+  user User
+  userId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Enum UserBadge {
+  PRO
+  TESTER
+  DEFAULT
+}
+
+Enum TestType {
+  WORDS
+  TIME
+}
+
+Enum TestLanguage {
+  ENGLISH
+  SPANISH
+}
+
+Ref: Account.userId > User.id
+
+Ref: Session.userId > User.id
+
+Ref: UserOnUser.childId > User.id
+
+Ref: UserOnUser.parentId > User.id
+
+Ref: WordsPerMinute.userId > User.id
+
+Ref: CharsPerMinute.userId > User.id
+
+Ref: TypingAccuracy.userId > User.id
+
+Ref: TestPreset.userId > User.id
