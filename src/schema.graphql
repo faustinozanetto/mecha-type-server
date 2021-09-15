@@ -29,7 +29,7 @@ input CharsPerMinuteCreateInput {
 }
 
 input CreateTestPresetInput {
-  creatorImage: String!
+  creatorImage: String
   language: TestLanguage!
   time: Int!
   type: TestType!

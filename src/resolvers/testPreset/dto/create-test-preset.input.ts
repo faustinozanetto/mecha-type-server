@@ -7,9 +7,8 @@ export class CreateTestPresetInput {
   @Field(() => String, { nullable: true })
   userId?: string;
 
-  @Field(() => String)
-  @IsNotEmpty()
-  creatorImage: string;
+  @Field(() => String, { nullable: true })
+  creatorImage?: string;
 
   @Field(() => TestType)
   @IsNotEmpty()

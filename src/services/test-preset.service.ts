@@ -68,7 +68,7 @@ export class TestPresetService {
         language: data.language,
         words: data.words,
         time: data.time,
-        creatorImage: 'https://imgur.com/xuIzYtW',
+        creatorImage: 'https://i.imgur.com/xuIzYtW.png',
       },
     });
     const parsedPreset = {
