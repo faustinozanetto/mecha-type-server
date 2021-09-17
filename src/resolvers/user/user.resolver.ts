@@ -1,16 +1,22 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Request } from 'express';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
+import { FollowUserResponse } from 'models/responses/user/follow-user.response';
+import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
-import { User, UserFilterBy } from 'models/user/user.model';
+import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
+import { User, UserBadge, UserFilterBy } from 'models/user/user.model';
+import { PrismaService } from 'services/prisma.service';
 import { UserService } from 'services/user.service';
+import { validateAuthCookies } from 'utils/helperFunctions';
 import { UserUpdateInput } from './dto/user-update.input';
 import { UserWhereInput } from './dto/user-where.input';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private prisma: PrismaService) {}
 
   @Query(() => UserResponse)
   async user(
@@ -51,23 +57,26 @@ export class UserResolver {
   async updateUser(
     @Args('where') where: UserWhereInput,
     @Args('data') data: UserUpdateInput,
+    @Context() { req },
   ): Promise<UserResponse> {
-    return await this.userService.updateUser(where, data);
+    return await this.userService.updateUser(where, data, req);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => FollowUserResponse)
   async followUser(
     @Args('userId', { type: () => String }) userId: string,
     @Args('targetUserId', { type: () => String }) targetUserId: string,
+    @Context() { req },
   ) {
-    return this.userService.followUser(userId, targetUserId);
+    return this.userService.followUser(userId, targetUserId, req);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => UnfollowUserResponse)
   async unfollowUser(
     @Args('userId', { type: () => String }) userId: string,
     @Args('targetUserId', { type: () => String }) targetUserId: string,
+    @Context() { req },
   ) {
-    return this.userService.unfollowUser(userId, targetUserId);
+    return this.userService.unfollowUser(userId, targetUserId, req);
   }
 }

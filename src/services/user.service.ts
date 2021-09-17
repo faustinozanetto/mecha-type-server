@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { User, UserBadge, UserFilterBy } from 'models/user/user.model';
 import { UserWhereInput } from 'resolvers/user/dto/user-where.input';
@@ -7,15 +7,20 @@ import { UserUpdateInput } from 'resolvers/user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
-import { calculateAverage } from 'utils/helperFunctions';
+import { calculateAverage, validateAuthCookies } from 'utils/helperFunctions';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
 import { FilteredUser } from 'models/user/filtered-user';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
 import { UserFollower } from 'models/user/user-follower.model';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { FollowUserResponse } from 'models/responses/user/follow-user.response';
+import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 
 @Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(@Inject(REQUEST) private request: Request, private prisma: PrismaService) {}
 
   /**
    * @param where Where parameter to filter the user.
@@ -224,7 +229,11 @@ export class UserService {
     };
   }
 
-  async updateUser(where: UserWhereInput, data: UserUpdateInput): Promise<UserResponse> {
+  async updateUser(
+    where: UserWhereInput,
+    data: UserUpdateInput,
+    request: Request,
+  ): Promise<UserResponse> {
     if (!where || !data) {
       return {
         errors: [
@@ -235,6 +244,20 @@ export class UserService {
         ],
       };
     }
+    // Validating wether user is logged in or not.
+    const validAuthCookie = validateAuthCookies(request);
+    if (!validAuthCookie) {
+      return {
+        errors: [
+          {
+            field: 'auth',
+            message: 'not authorized',
+          },
+        ],
+      };
+    }
+
+    // Updating the user
     const updatedUser = await this.prisma.user.update({
       where,
       data: {
@@ -257,6 +280,8 @@ export class UserService {
         testPresets: true,
       },
     });
+
+    // If an error ocurred we return error
     if (!updatedUser) {
       return {
         errors: [
@@ -286,6 +311,7 @@ export class UserService {
           : UserBadge.TESTER,
       testPresets: parsedPresets,
     };
+
     return { user: parsedUser };
   }
 
@@ -306,7 +332,24 @@ export class UserService {
     return { users: followers };
   }
 
-  async followUser(userId: string, targetUserId: string): Promise<boolean> {
+  async followUser(
+    userId: string,
+    targetUserId: string,
+    request: Request,
+  ): Promise<FollowUserResponse> {
+    // Validating wether user is logged in or not.
+    const validAuthCookie = validateAuthCookies(request);
+    if (!validAuthCookie) {
+      return {
+        errors: [
+          {
+            field: 'auth',
+            message: 'not authorized',
+          },
+        ],
+      };
+    }
+
     const exists = await this.prisma.userOnUser.findMany({
       where: {
         childId: targetUserId,
@@ -314,7 +357,7 @@ export class UserService {
       },
     });
     if (exists[0] && exists[0].id !== undefined) {
-      return false;
+      return { follow: false };
     }
     const follow = await this.prisma.userOnUser.create({
       data: {
@@ -322,17 +365,36 @@ export class UserService {
         child: { connect: { id: targetUserId } },
       },
     });
-    return follow.id !== undefined;
+    return {
+      follow: follow.id !== undefined,
+    };
   }
 
-  async unfollowUser(userId: string, targetUserId: string): Promise<boolean> {
+  async unfollowUser(
+    userId: string,
+    targetUserId: string,
+    request: Request,
+  ): Promise<UnfollowUserResponse> {
+    // Validating wether user is logged in or not.
+    const validAuthCookie = validateAuthCookies(request);
+    if (!validAuthCookie) {
+      return {
+        errors: [
+          {
+            field: 'auth',
+            message: 'not authorized',
+          },
+        ],
+      };
+    }
+
     await this.prisma.userOnUser.deleteMany({
       where: {
         childId: targetUserId,
         parentId: userId,
       },
     });
-    return true;
+    return { unfollow: true };
   }
 
   async followsUser(userId: string, targetUserId: string): Promise<boolean> {

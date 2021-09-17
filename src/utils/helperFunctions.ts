@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 
 /**
@@ -27,4 +28,22 @@ export const calculateAverage = (data: number[]): number => {
     return Number.parseFloat((sum / data.length).toFixed(2));
   }
   return 0;
+};
+
+/**
+ *
+ * @param request Request parameter to get cookies from
+ * @returns true or false wether session token was found or not.
+ */
+export const validateAuthCookies = (request: Request): boolean => {
+  const cookies: string[] = request.headers.cookie.split('; ');
+  const mappedCookies = cookies.map((cookie) => {
+    const splittedCookie = cookie.split('=');
+    const extractedCookie: { name: string; value: string } = {
+      name: splittedCookie[0],
+      value: splittedCookie[1],
+    };
+    return extractedCookie;
+  });
+  return mappedCookies.find((cookie) => cookie.name === 'session-token') ? true : false;
 };

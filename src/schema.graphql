@@ -64,6 +64,11 @@ type FilteredUsersResponse {
   filteredUsers: [FilteredUser!]
 }
 
+type FollowUserResponse {
+  errors: [ErrorResponse!]
+  follow: Boolean
+}
+
 input InputUpdateInput {
   decrement: Float
   divide: Float
@@ -75,8 +80,8 @@ input InputUpdateInput {
 type Mutation {
   createTestPreset(data: CreateTestPresetInput!): TestPreset!
   createTestPresetUser(data: CreateTestPresetInput!): TestPreset!
-  followUser(targetUserId: String!, userId: String!): Boolean!
-  unfollowUser(targetUserId: String!, userId: String!): Boolean!
+  followUser(targetUserId: String!, userId: String!): FollowUserResponse!
+  unfollowUser(targetUserId: String!, userId: String!): UnfollowUserResponse!
   updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
 }
 
@@ -145,6 +150,11 @@ type TypingAccuracy {
   """Identifies the date and time when the object was last updated."""
   updatedAt: Date!
   userId: String!
+}
+
+type UnfollowUserResponse {
+  errors: [ErrorResponse!]
+  unfollow: Boolean
 }
 
 type User {
