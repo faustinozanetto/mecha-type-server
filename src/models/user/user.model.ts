@@ -35,32 +35,32 @@ export class User extends BaseModel {
   @Field(() => String)
   name: string;
 
-  @Field(() => String)
-  email: string;
+  @Field(() => String, { nullable: true })
+  email?: string;
 
   @Field(() => Date, { nullable: true })
   emailVerified?: Date | null;
 
-  @Field(() => String)
-  description: string;
+  @Field(() => String, { nullable: true })
+  description?: string;
 
-  @Field(() => String)
-  image: string;
+  @Field(() => String, { nullable: true })
+  image?: string;
 
-  @Field(() => String)
-  country: string;
+  @Field(() => String, { nullable: true })
+  country?: string;
 
-  @Field(() => Int)
-  testsCompleted: number;
+  @Field(() => Int, { nullable: true })
+  testsCompleted?: number;
 
-  @Field(() => Int)
-  wordsWritten: number;
+  @Field(() => Int, { nullable: true })
+  wordsWritten?: number;
 
-  @Field(() => Int)
-  keystrokes: number;
+  @Field(() => Int, { nullable: true })
+  keystrokes?: number;
 
-  @Field(() => UserBadge)
-  badge: UserBadge;
+  @Field(() => UserBadge, { nullable: true })
+  badge?: UserBadge;
 
   @Field(() => [UserOnUser], { nullable: true })
   followedBy?: UserOnUser[];

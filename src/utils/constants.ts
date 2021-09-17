@@ -11,9 +11,7 @@ export const __PORT__ = process.env.PORT || 4000;
 /**
  * Return the origin uri.
  */
-export const __ORIGIN__ = __PROD__
-  ? process.env.CORS_ORIGIN
-  : 'http://localhost:3000';
+export const __ORIGIN__ = __PROD__ ? process.env.CORS_ORIGIN : 'http://localhost:3000';
 
 /**
  * Database URL used in production

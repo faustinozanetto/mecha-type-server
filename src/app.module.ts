@@ -11,6 +11,8 @@ import config from './config/config';
 import { TestPresetModule } from './resolvers/testPreset/test-preset.module';
 import { DateScalar } from './common/scalars/date.scalar';
 import { PrismaService } from 'services/prisma.service';
+import { __ORIGIN__, __PROD__ } from 'utils/constants';
+import { createUserLoader } from 'utils/create-user-loader';
 
 @Module({
   imports: [
@@ -20,14 +22,22 @@ import { PrismaService } from 'services/prisma.service';
         const graphqlConfig = configService.get<GraphqlConfig>('graphql');
         return {
           installSubscriptionHandlers: true,
+          path: 'mecha-api',
           buildSchemaOptions: {
             numberScalarMode: 'integer',
+          },
+          cors: {
+            origin: __ORIGIN__,
+            credentials: true,
           },
           sortSchema: graphqlConfig?.sortSchema,
           autoSchemaFile: graphqlConfig?.schemaDestination || './src/schema.graphql',
           debug: graphqlConfig?.debug,
-          playground: graphqlConfig?.playgroundEnabled,
-          context: ({ req }) => ({ req }),
+          playground: !__PROD__,
+          context: ({ res, req }) => ({
+            req,
+            res,
+          }),
         };
       },
       inject: [ConfigService],

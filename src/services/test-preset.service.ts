@@ -1,25 +1,48 @@
 import { Injectable } from '@nestjs/common';
+import { Request } from 'express';
+import { TestPresetResponse } from 'models/responses/test-preset/test-preset-response.model';
+import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';
+import { UserResponse } from 'models/responses/user/user-response.model';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
+import { UserBadge } from 'models/user/user.model';
 import { CreateTestPresetInput } from 'resolvers/testPreset/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'resolvers/testPreset/dto/test-presets-find.input';
+import { validateAuthCookies } from 'utils/helperFunctions';
 import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class TestPresetService {
   constructor(private prisma: PrismaService) {}
 
-  async testPreset(id: string): Promise<TestPreset | null> {
+  async presetCreator(creatorId: string): Promise<UserResponse> {
+    const user = await this.prisma.user.findUnique({ where: { id: creatorId } });
+    return {
+      user: {
+        ...user,
+        badge:
+          user.badge === 'DEFAULT'
+            ? UserBadge.DEFAULT
+            : user.badge === 'PRO'
+            ? UserBadge.PRO
+            : UserBadge.TESTER,
+      },
+    };
+  }
+
+  async testPreset(id: string): Promise<TestPresetResponse> {
     const preset = await this.prisma.testPreset.findUnique({
       where: { id },
     });
     return {
-      ...preset,
-      type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-      language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+      testPreset: {
+        ...preset,
+        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+      },
     };
   }
 
-  async testPresets(input: TestPresetsFindInput): Promise<TestPreset[] | null> {
+  async testPresets(input: TestPresetsFindInput): Promise<TestPresetsResponse> {
     const presets = await this.prisma.testPreset.findMany({
       take: input.take,
       skip: input.skip,
@@ -41,10 +64,10 @@ export class TestPresetService {
       };
     });
 
-    return parsedPresets;
+    return { testPresets: parsedPresets };
   }
 
-  async userTestPresets(userId: string): Promise<TestPreset[] | null> {
+  async userTestPresets(userId: string): Promise<TestPresetsResponse> {
     const presets = await this.prisma.testPreset.findMany({
       where: { userId },
     });
@@ -58,10 +81,10 @@ export class TestPresetService {
       };
       parsedPresets.push(parsedPreset);
     });
-    return parsedPresets;
+    return { testPresets: parsedPresets };
   }
 
-  async createTestPreset(data: CreateTestPresetInput): Promise<TestPreset | null> {
+  async createTestPreset(data: CreateTestPresetInput): Promise<TestPresetResponse> {
     const preset = await this.prisma.testPreset.create({
       data: {
         type: data.type,
@@ -76,10 +99,25 @@ export class TestPresetService {
       type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
       language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
     };
-    return parsedPreset;
+    return { testPreset: parsedPreset };
   }
 
-  async createTestPresetUser(data: CreateTestPresetInput): Promise<TestPreset | null> {
+  async createTestPresetUser(
+    data: CreateTestPresetInput,
+    request: Request,
+  ): Promise<TestPresetResponse> {
+    // Validating wether user is logged in or not.
+    const validAuthCookie = validateAuthCookies(request);
+    if (!validAuthCookie) {
+      return {
+        errors: [
+          {
+            field: 'auth',
+            message: 'not authorized',
+          },
+        ],
+      };
+    }
     const preset = await this.prisma.testPreset.create({
       data: {
         type: data.type,
@@ -94,11 +132,21 @@ export class TestPresetService {
         },
       },
     });
+    if (!preset) {
+      return {
+        errors: [
+          {
+            field: 'preset',
+            message: 'An error occurred while creating preset.',
+          },
+        ],
+      };
+    }
     const parsedPreset = {
       ...preset,
       type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
       language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
     };
-    return parsedPreset;
+    return { testPreset: parsedPreset };
   }
 }

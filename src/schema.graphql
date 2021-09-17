@@ -78,8 +78,8 @@ input InputUpdateInput {
 }
 
 type Mutation {
-  createTestPreset(data: CreateTestPresetInput!): TestPreset!
-  createTestPresetUser(data: CreateTestPresetInput!): TestPreset!
+  createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
+  createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
   followUser(targetUserId: String!, userId: String!): FollowUserResponse!
   unfollowUser(targetUserId: String!, userId: String!): UnfollowUserResponse!
   updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
@@ -89,11 +89,11 @@ type Query {
   filterUsers(filterBy: UserFilterBy!, take: Int!): FilteredUsersResponse!
   followsUser(targetUserId: String!, userId: String!): Boolean!
   helloWorld: String!
-  testPreset(id: String!): TestPreset!
-  testPresets(input: TestPresetsFindInput): [TestPreset!]!
+  testPreset(id: String!): TestPresetResponse!
+  testPresets(input: TestPresetsFindInput): TestPresetsResponse!
   user(where: UserWhereInput!): UserResponse!
   userFollowers(userId: String!): UserFollowersResponse!
-  userTestPresets(userId: String!): [TestPreset!]!
+  userTestPresets(userId: String!): TestPresetsResponse!
   users(take: Int!): UsersResponse!
 }
 
@@ -106,6 +106,7 @@ enum TestLanguage {
 type TestPreset {
   """Identifies the date and time when the object was created."""
   createdAt: Date!
+  creator: User!
   creatorImage: String
   id: String!
   language: TestLanguage
@@ -116,6 +117,11 @@ type TestPreset {
   updatedAt: Date!
   userId: String
   words: Int
+}
+
+type TestPresetResponse {
+  errors: [ErrorResponse!]
+  testPreset: TestPreset
 }
 
 input TestPresetWhereInput {
@@ -132,6 +138,11 @@ input TestPresetsFindInput {
   skip: Int
   take: Int
   where: TestPresetWhereInput
+}
+
+type TestPresetsResponse {
+  errors: [ErrorResponse!]
+  testPresets: [TestPreset!]
 }
 
 """Test Type"""
@@ -159,28 +170,28 @@ type UnfollowUserResponse {
 
 type User {
   accuracy: [TypingAccuracy!]
-  badge: UserBadge!
+  badge: UserBadge
   charsPerMinute: [CharsPerMinute!]
-  country: String!
+  country: String
 
   """Identifies the date and time when the object was created."""
   createdAt: Date!
-  description: String!
-  email: String!
+  description: String
+  email: String
   emailVerified: Date
   followedBy: [UserOnUser!]
   following: [UserOnUser!]
   id: String!
-  image: String!
-  keystrokes: Int!
+  image: String
+  keystrokes: Int
   name: String!
   testPresets: [TestPreset!]
-  testsCompleted: Int!
+  testsCompleted: Int
 
   """Identifies the date and time when the object was last updated."""
   updatedAt: Date!
   wordsPerMinute: [WordsPerMinute!]
-  wordsWritten: Int!
+  wordsWritten: Int
 }
 
 """User Badges"""
