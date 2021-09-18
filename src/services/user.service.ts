@@ -1,5 +1,5 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { User, UserBadge, UserFilterBy } from 'models/user/user.model';
 import { UserWhereInput } from 'resolvers/user/dto/user-where.input';
 import { UserUpdateInput } from 'resolvers/user/dto/user-update.input';
@@ -7,7 +7,7 @@ import { UserUpdateInput } from 'resolvers/user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
-import { calculateAverage, validateAuthCookies } from 'utils/helperFunctions';
+import { calculateAverage, validateAuthCookies } from 'utils/helper-functions';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
 import { FilteredUser } from 'models/user/filtered-user';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';

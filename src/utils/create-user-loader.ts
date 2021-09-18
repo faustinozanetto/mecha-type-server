@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
 import { User, UserBadge } from '../models/user/user.model';
-import { PrismaService } from '../services/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 export const createUserLoader = (prismaService: PrismaService) =>
   new DataLoader<string, User>(async (userIds) => {

@@ -6,7 +6,7 @@ import { UserFollowersResponse } from 'models/responses/user/user-followers-resp
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
 import { User, UserFilterBy } from 'models/user/user.model';
-import { PrismaService } from 'services/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import { UserService } from 'services/user.service';
 import { UserUpdateInput } from './dto/user-update.input';
 import { UserWhereInput } from './dto/user-where.input';

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { PrismaModule } from 'nestjs-prisma';
 import { GraphqlConfig } from './config/config.interface';
 import { AppController } from './controllers/app.controller';
 import { AppResolver } from './resolvers/app.resolver';
@@ -10,9 +9,9 @@ import { AppService } from './services/app.service';
 import config from './config/config';
 import { TestPresetModule } from './resolvers/testPreset/test-preset.module';
 import { DateScalar } from './common/scalars/date.scalar';
-import { PrismaService } from 'services/prisma.service';
+import { PrismaService } from './prisma/prisma.service';
 import { __ORIGIN__, __PROD__ } from 'utils/constants';
-import { createUserLoader } from 'utils/create-user-loader';
+import { PrismaModule } from 'prisma/prisma.module';
 
 @Module({
   imports: [
@@ -42,10 +41,7 @@ import { createUserLoader } from 'utils/create-user-loader';
       },
       inject: [ConfigService],
     }),
-    PrismaModule.forRoot({
-      isGlobal: true,
-    }),
-    PrismaService,
+    PrismaModule,
     UserModule,
     TestPresetModule,
   ],

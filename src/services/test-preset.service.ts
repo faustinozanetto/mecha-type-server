@@ -7,8 +7,8 @@ import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-pres
 import { UserBadge } from 'models/user/user.model';
 import { CreateTestPresetInput } from 'resolvers/testPreset/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'resolvers/testPreset/dto/test-presets-find.input';
-import { validateAuthCookies } from 'utils/helperFunctions';
-import { PrismaService } from './prisma.service';
+import { validateAuthCookies } from 'utils/helper-functions';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TestPresetService {

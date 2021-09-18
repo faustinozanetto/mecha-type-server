@@ -6,7 +6,7 @@ export const __PROD__: boolean = process.env.NODE_ENV === 'production';
 /**
  * Returns the port used on production
  */
-export const __PORT__ = process.env.PORT || 4000;
+export const __PORT__ = process.env.PORT || 3000;
 
 /**
  * Return the origin uri.

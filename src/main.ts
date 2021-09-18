@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { __ORIGIN__ } from 'utils/constants';
 import { AppModule } from './app.module';
 import { CorsConfig, NestConfig } from './config/config.interface';
@@ -24,7 +23,7 @@ async function bootstrap() {
 
   // Prisma Client Exception Filter for unhandled exception
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  // app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   // App listen
   await app.listen(process.env.PORT || nestConfig?.port || 3000);

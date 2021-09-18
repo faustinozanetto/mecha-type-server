@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "UserBadge" AS ENUM ('PRO', 'TESTER', 'DEFAULT');
+
+-- CreateEnum
 CREATE TYPE "TestType" AS ENUM ('WORDS', 'TIME');
 
 -- CreateEnum
@@ -43,6 +46,7 @@ CREATE TABLE "User" (
     "emailVerified" TIMESTAMP(3),
     "image" TEXT NOT NULL,
     "country" TEXT NOT NULL DEFAULT E'',
+    "badge" "UserBadge" NOT NULL DEFAULT E'DEFAULT',
     "keystrokes" INTEGER NOT NULL DEFAULT 0,
     "testsCompleted" INTEGER NOT NULL DEFAULT 0,
     "wordsWritten" INTEGER NOT NULL DEFAULT 0,
@@ -110,6 +114,7 @@ CREATE TABLE "TestPreset" (
     "language" "TestLanguage" NOT NULL DEFAULT E'ENGLISH',
     "time" INTEGER NOT NULL DEFAULT 0,
     "words" INTEGER NOT NULL DEFAULT 25,
+    "creatorImage" TEXT NOT NULL DEFAULT E'',
     "userId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
+import { TestLanguage, TestPreset, TestType } from '../models/test-preset/test-preset.model';
 
 /**
  *
