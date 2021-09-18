@@ -26,7 +26,7 @@ async function bootstrap() {
   // app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   // App listen
-  await app.listen(process.env.PORT || nestConfig?.port || 3000);
+  await app.listen(process.env.PORT || nestConfig?.port || 4000);
 }
 
 bootstrap();

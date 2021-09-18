@@ -20,5 +20,5 @@ COPY --from=development /app/node_modules ./node_modules
 COPY --from=development /app/package*.json ./
 COPY --from=development /app/dist ./dist
 
-EXPOSE 3000
+EXPOSE 4000
 CMD [ "npm", "run", "start:prod" ]
