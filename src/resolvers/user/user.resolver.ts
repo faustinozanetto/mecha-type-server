@@ -29,10 +29,10 @@ export class UserResolver {
 
   @Query(() => FilteredUsersResponse)
   async filterUsers(
-    @Args('take', { type: () => Int }) take: number,
+    @Args('page', { type: () => Int }) page: number,
     @Args('filterBy', { type: () => UserFilterBy }) filterBy: UserFilterBy,
   ): Promise<FilteredUsersResponse> {
-    return await this.userService.filterUsers(take, filterBy);
+    return await this.userService.filterUsers(page, filterBy);
   }
 
   @Query(() => UserFollowersResponse)

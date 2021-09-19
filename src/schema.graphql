@@ -60,8 +60,13 @@ type FilteredUser {
 }
 
 type FilteredUsersResponse {
+  currentPage: Int
   errors: [ErrorResponse!]
-  filteredUsers: [FilteredUser!]
+  hasMore: Boolean
+  nodeCount: Int
+  nodes: [FilteredUser!]
+  nodesPerPage: Int
+  pageCount: Int
 }
 
 type FollowUserResponse {
@@ -86,7 +91,7 @@ type Mutation {
 }
 
 type Query {
-  filterUsers(filterBy: UserFilterBy!, take: Int!): FilteredUsersResponse!
+  filterUsers(filterBy: UserFilterBy!, page: Int!): FilteredUsersResponse!
   followsUser(targetUserId: String!, userId: String!): Boolean!
   helloWorld: String!
   testPreset(id: String!): TestPresetResponse!

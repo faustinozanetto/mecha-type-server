@@ -114,27 +114,33 @@ export class UserService {
     };
   }
 
-  async filterUsers(take: number, filterBy: UserFilterBy): Promise<FilteredUsersResponse> {
-    if (!take) {
+  async filterUsers(page: number, filterBy: UserFilterBy): Promise<FilteredUsersResponse> {
+    if (page < 0) {
       return {
         errors: [
           {
-            field: 'take',
-            message: 'Invalid take parameter',
+            field: 'page',
+            message: 'Invalid page parameter',
           },
         ],
       };
     }
+    const PAGE_SIZE = 2;
     const filteredUsers: FilteredUser[] = [];
 
     switch (filterBy) {
       case UserFilterBy.ACCURACY: {
         const users = await this.prisma.user.findMany({
-          take,
+          skip: page * PAGE_SIZE,
+          take: PAGE_SIZE,
+          orderBy: {
+            createdAt: 'desc',
+          },
           include: {
             accuracy: true,
           },
         });
+
         // Mapping for each user
         users.map((user) => {
           // Calculate average accuracy for user.
@@ -148,7 +154,11 @@ export class UserService {
       }
       case UserFilterBy.WPM: {
         const users = await this.prisma.user.findMany({
-          take,
+          skip: page * PAGE_SIZE,
+          take: PAGE_SIZE,
+          orderBy: {
+            createdAt: 'desc',
+          },
           include: {
             wordsPerMinute: true,
           },
@@ -166,7 +176,11 @@ export class UserService {
       }
       case UserFilterBy.CPM: {
         const users = await this.prisma.user.findMany({
-          take,
+          skip: page * PAGE_SIZE,
+          take: PAGE_SIZE,
+          orderBy: {
+            createdAt: 'desc',
+          },
           include: {
             charsPerMinute: true,
           },
@@ -184,7 +198,11 @@ export class UserService {
       }
       case UserFilterBy.KEYSTROKES: {
         const users = await this.prisma.user.findMany({
-          take,
+          skip: page * PAGE_SIZE,
+          take: PAGE_SIZE,
+          orderBy: {
+            createdAt: 'desc',
+          },
         });
         // Mapping for each user
         users.map((user) => {
@@ -199,7 +217,11 @@ export class UserService {
       }
       case UserFilterBy.TESTSCOMPLETED: {
         const users = await this.prisma.user.findMany({
-          take,
+          skip: page * PAGE_SIZE,
+          take: PAGE_SIZE,
+          orderBy: {
+            createdAt: 'desc',
+          },
         });
         // Mapping for each user
         users.map((user) => {
@@ -224,8 +246,18 @@ export class UserService {
         ],
       };
     }
+    const nodeCount = filteredUsers.length;
+    const pageCount = Math.ceil(nodeCount / PAGE_SIZE);
+    const currentPage = (page * PAGE_SIZE) / PAGE_SIZE;
+    const hasMore = currentPage !== pageCount;
+
     return {
-      filteredUsers,
+      nodes: filteredUsers,
+      nodeCount,
+      pageCount,
+      currentPage,
+      hasMore,
+      nodesPerPage: PAGE_SIZE,
     };
   }
 
