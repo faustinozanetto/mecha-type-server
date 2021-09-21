@@ -144,7 +144,6 @@ export class AuthController {
           maxAge: 0,
           sameSite: 'lax',
           secure: __PROD__,
-          path: '/',
         })
         .sendStatus(200);
     });

@@ -45,7 +45,7 @@ async function bootstrap() {
     session({
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: 'strict',
+        sameSite: 'lax',
         secure: __PROD__,
       },
       name: 'session',
