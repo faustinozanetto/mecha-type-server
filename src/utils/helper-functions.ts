@@ -45,5 +45,5 @@ export const validateAuthCookies = (request: Request): boolean => {
     };
     return extractedCookie;
   });
-  return mappedCookies.find((cookie) => cookie.name === 'session-token') ? true : false;
+  return mappedCookies.find((cookie) => cookie.name === 'session') ? true : false;
 };

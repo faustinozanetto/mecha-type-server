@@ -4,7 +4,7 @@ import { TestPresetResponse } from 'models/responses/test-preset/test-preset-res
 import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
-import { UserBadge } from 'models/user/user.model';
+import { AuthProvider, UserBadge } from 'models/user/user.model';
 import { CreateTestPresetInput } from 'test-presets/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'test-presets/dto/test-presets-find.input';
 import { validateAuthCookies } from 'utils/helper-functions';
@@ -15,7 +15,7 @@ export class TestPresetService {
   constructor(private prisma: PrismaService) {}
 
   async presetCreator(creatorId: string): Promise<UserResponse> {
-    const user = await this.prisma.user.findUnique({ where: { id: creatorId } });
+    const user = await this.prisma.user.findUnique({ where: { id: creatorId ?? '' } });
     return {
       user: {
         ...user,
@@ -25,13 +25,21 @@ export class TestPresetService {
             : user.badge === 'PRO'
             ? UserBadge.PRO
             : UserBadge.TESTER,
+        authProvider:
+          user.authProvider === 'DEFAULT'
+            ? AuthProvider.DEFAULT
+            : user.authProvider === 'DISCORD'
+            ? AuthProvider.DISCORD
+            : user.authProvider === 'GITHUB'
+            ? AuthProvider.GITHUB
+            : AuthProvider.GOOGLE,
       },
     };
   }
 
   async testPreset(id: string): Promise<TestPresetResponse> {
     const preset = await this.prisma.testPreset.findUnique({
-      where: { id },
+      where: { id: id ?? '' },
     });
     return {
       testPreset: {

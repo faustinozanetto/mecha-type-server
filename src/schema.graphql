@@ -93,7 +93,7 @@ type User {
   """Identifies the date and time when the object was last updated."""
   updatedAt: Date!
   username: String
-  discordId: String
+  oauthId: String
   description: String
   avatar: String
   country: String
@@ -101,6 +101,7 @@ type User {
   wordsWritten: Int
   keystrokes: Int
   badge: UserBadge
+  authProvider: AuthProvider
   followedBy: [UserOnUser!]
   following: [UserOnUser!]
   wordsPerMinute: [WordsPerMinute!]
@@ -114,6 +115,14 @@ enum UserBadge {
   DEFAULT
   TESTER
   PRO
+}
+
+"""User auth provider service"""
+enum AuthProvider {
+  DEFAULT
+  DISCORD
+  GITHUB
+  GOOGLE
 }
 
 type ErrorResponse {
@@ -141,6 +150,8 @@ type FilteredUser {
   updatedAt: Date!
   username: String!
   avatar: String!
+  authProvider: AuthProvider
+  oauthId: String
   country: String!
   value: Float!
 }
@@ -165,6 +176,8 @@ type UserFollower {
   updatedAt: Date!
   username: String!
   avatar: String!
+  authProvider: AuthProvider
+  oauthId: String
 }
 
 type UserFollowersResponse {
@@ -193,7 +206,6 @@ type TestPresetsResponse {
 }
 
 type Query {
-  helloWorld: String!
   me: UserResponse!
   user(where: UserWhereInput!): UserResponse!
   users(take: Int!): UsersResponse!
@@ -207,8 +219,7 @@ type Query {
 
 input UserWhereInput {
   id: String
-  name: String
-  email: String
+  username: String
 }
 
 """Fields to filter Users By"""

@@ -1,8 +1,7 @@
 import config from './config/config';
-import { HttpModule, Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { AppController } from './controllers/app.controller';
 import { PassportModule } from '@nestjs/passport';
 import { DateScalar } from './common/scalars/date.scalar';
 import { PrismaService } from './prisma/prisma.service';
@@ -12,6 +11,7 @@ import { DiscordModule } from 'discord/discord.module';
 import { AuthModule } from 'auth/auth.module';
 import { UserModule } from 'user/user.module';
 import { TestPresetModule } from 'test-presets/test-preset.module';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { TestPresetModule } from 'test-presets/test-preset.module';
     UserModule,
     TestPresetModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [PrismaService, DateScalar],
 })
 export class AppModule {}

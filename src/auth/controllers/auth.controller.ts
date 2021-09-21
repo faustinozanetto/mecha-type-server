@@ -1,27 +1,95 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthenticatedGuard, DiscordAuthGuard } from 'auth/utils/guards';
-import { User } from '@prisma/client';
+import {
+  AuthenticatedGuard,
+  DiscordAuthGuard,
+  GithubAuthGuard,
+  GoogleAuthGuard,
+  SteamAuthGuard,
+} from 'auth/utils/guards';
+import { __AUTH_REDIRECT__, __PROD__, __URL__ } from 'utils/constants';
+import { UserStatus } from 'types/types';
 
 @Controller('auth')
 export class AuthController {
   /**
-   * GET /api/auth/login
-   * This is the route the user will visit to authenticate
+   * GET /api/auth/discord/login
+   * This is the route the user will visit to authenticate with discord
    */
-  @Get('login')
+  @Get('/discord/login')
   @UseGuards(DiscordAuthGuard)
-  login() {
+  discordLogin() {
     return;
   }
+
   /**
-   * GET /api/auth/redirect
-   * This is the redirect URL the OAuth2 Provider will call.
+   * GET /api/auth/google/login
+   * This is the route the user will visit to authenticate with google
    */
-  @Get('redirect')
+  @Get('/google/login')
+  @UseGuards(GoogleAuthGuard)
+  googleLogin() {
+    return;
+  }
+
+  /**
+   * GET /api/auth/steam/login
+   * This is the route the user will visit to authenticate with steam
+   */
+  @Get('/steam/login')
+  @UseGuards(SteamAuthGuard)
+  steamLogin() {
+    return;
+  }
+
+  /**
+   * GET /api/auth/github/login
+   * This is the route the user will visit to authenticate with github
+   */
+  @Get('/github/login')
+  @UseGuards(GithubAuthGuard)
+  githubLogin() {
+    return;
+  }
+
+  /**
+   * GET /api/auth/google/redirect
+   * This is the redirect URL the OAuth2 Provider will call for google.
+   */
+  @Get('/google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  googleRedirect(@Res() res: Response) {
+    res.redirect(__AUTH_REDIRECT__ as string);
+  }
+
+  /**
+   * GET /api/auth/discord/redirect
+   * This is the redirect URL the OAuth2 Provider will call for discord
+   */
+  @Get('/discord/redirect')
   @UseGuards(DiscordAuthGuard)
-  redirect(@Res() res: Response) {
-    res.redirect('http://localhost:3000');
+  discordRedirect(@Res() res: Response) {
+    res.redirect(__AUTH_REDIRECT__ as string);
+  }
+
+  /**
+   * GET /api/auth/steam/redirect
+   * This is the redirect URL the OAuth2 Provider will call for steam
+   */
+  @Get('/steam/redirect')
+  @UseGuards(SteamAuthGuard)
+  steamRedirect(@Res() res: Response) {
+    res.redirect(__AUTH_REDIRECT__ as string);
+  }
+
+  /**
+   * GET /api/auth/github/redirect
+   * This is the redirect URL the OAuth2 Provider will call for github
+   */
+  @Get('/github/redirect')
+  @UseGuards(GithubAuthGuard)
+  githubRedirect(@Res() res: Response) {
+    res.redirect(__AUTH_REDIRECT__ as string);
   }
 
   /**
@@ -30,8 +98,36 @@ export class AuthController {
    */
   @Get('status')
   @UseGuards(AuthenticatedGuard)
-  status(@Req() req: Request) {
-    return req.user;
+  status(@Req() req: Request, @Res() res: Response) {
+    const user = req.user as UserStatus;
+    return res.json({ id: user.id, username: user.username });
+  }
+
+  /**
+   * GET /api/auth/providers
+   * Retrieve the auth providers
+   */
+  @Get('providers')
+  providers(@Res() res: Response) {
+    return res.json({
+      providers: [
+        {
+          id: 'discord',
+          name: 'Discord',
+          authUrl: `${__URL__}/api/auth/discord/login`,
+        },
+        {
+          id: 'google',
+          name: 'Google',
+          authUrl: `${__URL__}/api/auth/google/login`,
+        },
+        {
+          id: 'github',
+          name: 'Github',
+          authUrl: `${__URL__}/api/auth/github/login`,
+        },
+      ],
+    });
   }
 
   /**
@@ -40,7 +136,17 @@ export class AuthController {
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
-  logout(@Req() req: Request) {
+  logout(@Req() req: Request, @Res() res: Response) {
     req.logOut();
+    req.session.destroy(() => {
+      res
+        .clearCookie('session', {
+          maxAge: 0,
+          sameSite: 'lax',
+          secure: __PROD__,
+          path: '/',
+        })
+        .sendStatus(200);
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { __ORIGIN__ } from 'utils/constants';
+import { __DB_URL__, __ORIGIN__, __PROD__ } from 'utils/constants';
 import { AppModule } from './app.module';
 import { CorsConfig, NestConfig } from './config/config.interface';
 import * as pg from 'pg';
@@ -17,6 +17,10 @@ const pgPool = new pg.Pool({
   user: 'postgres',
   password: '4532164mine',
   ssl: false,
+});
+
+const productionPool = new pg.Pool({
+  connectionString: __DB_URL__,
 });
 
 async function bootstrap() {
@@ -41,13 +45,15 @@ async function bootstrap() {
     session({
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: 'strict',
+        secure: __PROD__,
       },
       name: 'session',
-      secret: 'dahdgasdjhsadgsajhdsagdhjd',
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       store: new pgSession({
-        pool: pgPool, // Connection pool
+        pool: __PROD__ ? productionPool : pgPool, // Connection pool
         tableName: 'Sessions', // Use another table-name than
         createTableIfMissing: true,
       }),

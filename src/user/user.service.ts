@@ -1,6 +1,6 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, UserBadge, UserFilterBy } from 'models/user/user.model';
+import { AuthProvider, User, UserBadge, UserFilterBy } from 'models/user/user.model';
 import { UserWhereInput } from 'user/dto/user-where.input';
 import { UserUpdateInput } from 'user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
@@ -46,7 +46,7 @@ export class UserService {
    * @returns The user response containing the user and or errors.
    */
   async user(where: UserWhereInput): Promise<UserResponse> {
-    if (!where.id && !where.email && !where.name) {
+    if (!where.id && !where.username) {
       return {
         errors: [{ field: 'where', message: 'where parameter not specified' }],
       };
@@ -84,6 +84,14 @@ export class UserService {
             : user.badge === 'PRO'
             ? UserBadge.PRO
             : UserBadge.TESTER,
+        authProvider:
+          user.authProvider === 'DEFAULT'
+            ? AuthProvider.DEFAULT
+            : user.authProvider === 'DISCORD'
+            ? AuthProvider.DISCORD
+            : user.authProvider === 'GITHUB'
+            ? AuthProvider.GITHUB
+            : AuthProvider.GOOGLE,
         testPresets: parsedPresets,
       };
 
@@ -105,6 +113,7 @@ export class UserService {
 
     const users = await this.prisma.user.findMany({
       take,
+      where: {},
     });
     if (!users) {
       return {
@@ -125,6 +134,14 @@ export class UserService {
             : user.badge === 'PRO'
             ? UserBadge.PRO
             : UserBadge.TESTER,
+        authProvider:
+          user.authProvider === 'DEFAULT'
+            ? AuthProvider.DEFAULT
+            : user.authProvider === 'DISCORD'
+            ? AuthProvider.DISCORD
+            : user.authProvider === 'GITHUB'
+            ? AuthProvider.GITHUB
+            : AuthProvider.GOOGLE,
       };
     });
 
@@ -152,6 +169,7 @@ export class UserService {
         const users = await this.prisma.user.findMany({
           skip: page * PAGE_SIZE,
           take: PAGE_SIZE,
+          where: {},
           orderBy: {
             createdAt: 'desc',
           },
@@ -165,7 +183,18 @@ export class UserService {
           // Calculate average accuracy for user.
           const averageField = calculateAverage(user.accuracy.map((accuracy) => accuracy.amount));
           // Create entry with name and average.
-          filteredUsers.push({ ...user, value: averageField });
+          filteredUsers.push({
+            ...user,
+            value: averageField,
+            authProvider:
+              user.authProvider === 'DEFAULT'
+                ? AuthProvider.DEFAULT
+                : user.authProvider === 'DISCORD'
+                ? AuthProvider.DISCORD
+                : user.authProvider === 'GITHUB'
+                ? AuthProvider.GITHUB
+                : AuthProvider.GOOGLE,
+          });
         });
         // Sorting
         filteredUsers.sort((a, b) => b.value - a.value);
@@ -175,6 +204,7 @@ export class UserService {
         const users = await this.prisma.user.findMany({
           skip: page * PAGE_SIZE,
           take: PAGE_SIZE,
+          where: {},
           orderBy: {
             createdAt: 'desc',
           },
@@ -187,7 +217,18 @@ export class UserService {
           // Calculate average accuracy for user.
           const averageField = calculateAverage(user.wordsPerMinute.map((wpm) => wpm.amount));
           // Create entry with name and average.
-          filteredUsers.push({ ...user, value: averageField });
+          filteredUsers.push({
+            ...user,
+            value: averageField,
+            authProvider:
+              user.authProvider === 'DEFAULT'
+                ? AuthProvider.DEFAULT
+                : user.authProvider === 'DISCORD'
+                ? AuthProvider.DISCORD
+                : user.authProvider === 'GITHUB'
+                ? AuthProvider.GITHUB
+                : AuthProvider.GOOGLE,
+          });
         });
         // Sorting
         filteredUsers.sort((a, b) => b.value - a.value);
@@ -197,6 +238,7 @@ export class UserService {
         const users = await this.prisma.user.findMany({
           skip: page * PAGE_SIZE,
           take: PAGE_SIZE,
+          where: {},
           orderBy: {
             createdAt: 'desc',
           },
@@ -209,7 +251,18 @@ export class UserService {
           // Calculate average accuracy for user.
           const averageField = calculateAverage(user.charsPerMinute.map((cpm) => cpm.amount));
           // Create entry with name and average.
-          filteredUsers.push({ ...user, value: averageField });
+          filteredUsers.push({
+            ...user,
+            value: averageField,
+            authProvider:
+              user.authProvider === 'DEFAULT'
+                ? AuthProvider.DEFAULT
+                : user.authProvider === 'DISCORD'
+                ? AuthProvider.DISCORD
+                : user.authProvider === 'GITHUB'
+                ? AuthProvider.GITHUB
+                : AuthProvider.GOOGLE,
+          });
         });
         // Sorting
         filteredUsers.sort((a, b) => b.value - a.value);
@@ -219,6 +272,7 @@ export class UserService {
         const users = await this.prisma.user.findMany({
           skip: page * PAGE_SIZE,
           take: PAGE_SIZE,
+          where: {},
           orderBy: {
             createdAt: 'desc',
           },
@@ -228,7 +282,18 @@ export class UserService {
           // Calculate average accuracy for user.
           const averageField = user.keystrokes;
           // Create entry with name and average.
-          filteredUsers.push({ ...user, value: averageField });
+          filteredUsers.push({
+            ...user,
+            value: averageField,
+            authProvider:
+              user.authProvider === 'DEFAULT'
+                ? AuthProvider.DEFAULT
+                : user.authProvider === 'DISCORD'
+                ? AuthProvider.DISCORD
+                : user.authProvider === 'GITHUB'
+                ? AuthProvider.GITHUB
+                : AuthProvider.GOOGLE,
+          });
         });
         // Sorting
         filteredUsers.sort((a, b) => b.value - a.value);
@@ -238,6 +303,7 @@ export class UserService {
         const users = await this.prisma.user.findMany({
           skip: page * PAGE_SIZE,
           take: PAGE_SIZE,
+          where: {},
           orderBy: {
             createdAt: 'desc',
           },
@@ -247,7 +313,18 @@ export class UserService {
           // Calculate average accuracy for user.
           const averageField = user.testsCompleted;
           // Create entry with name and average.
-          filteredUsers.push({ ...user, value: averageField });
+          filteredUsers.push({
+            ...user,
+            value: averageField,
+            authProvider:
+              user.authProvider === 'DEFAULT'
+                ? AuthProvider.DEFAULT
+                : user.authProvider === 'DISCORD'
+                ? AuthProvider.DISCORD
+                : user.authProvider === 'GITHUB'
+                ? AuthProvider.GITHUB
+                : AuthProvider.GOOGLE,
+          });
         });
         // Sorting
         filteredUsers.sort((a, b) => b.value - a.value);
@@ -359,6 +436,14 @@ export class UserService {
           : updatedUser.badge === 'PRO'
           ? UserBadge.PRO
           : UserBadge.TESTER,
+      authProvider:
+        updatedUser.authProvider === 'DEFAULT'
+          ? AuthProvider.DEFAULT
+          : updatedUser.authProvider === 'DISCORD'
+          ? AuthProvider.DISCORD
+          : updatedUser.authProvider === 'GITHUB'
+          ? AuthProvider.GITHUB
+          : AuthProvider.GOOGLE,
       testPresets: parsedPresets,
     };
 
@@ -376,7 +461,17 @@ export class UserService {
         where: { id: entry.parentId },
       });
       if (follower) {
-        followers.push(follower);
+        followers.push({
+          ...follower,
+          authProvider:
+            follower.authProvider === 'DEFAULT'
+              ? AuthProvider.DEFAULT
+              : follower.authProvider === 'DISCORD'
+              ? AuthProvider.DISCORD
+              : follower.authProvider === 'GITHUB'
+              ? AuthProvider.GITHUB
+              : AuthProvider.GOOGLE,
+        });
       }
     }
     return { users: followers };

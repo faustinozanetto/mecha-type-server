@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-import { User, UserBadge } from '../models/user/user.model';
+import { AuthProvider, User, UserBadge } from '../models/user/user.model';
 import { PrismaService } from '../prisma/prisma.service';
 
 export const createUserLoader = (prismaService: PrismaService) =>
@@ -14,6 +14,14 @@ export const createUserLoader = (prismaService: PrismaService) =>
             : user.badge === 'PRO'
             ? UserBadge.PRO
             : UserBadge.TESTER,
+        authProvider:
+          user.authProvider === 'DEFAULT'
+            ? AuthProvider.DEFAULT
+            : user.authProvider === 'DISCORD'
+            ? AuthProvider.DISCORD
+            : user.authProvider === 'GITHUB'
+            ? AuthProvider.GITHUB
+            : AuthProvider.GOOGLE,
       };
     });
     const userIdToUser: Record<string, User> = {};

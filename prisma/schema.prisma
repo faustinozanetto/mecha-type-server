@@ -16,9 +16,16 @@ enum UserBadge {
   DEFAULT
 }
 
+enum AuthProvider {
+  DEFAULT
+  DISCORD
+  GITHUB
+  GOOGLE
+}
+
 model User {
   id             String           @id @default(cuid())
-  discordId      String           @unique
+  oauthId        String           @unique
   username       String           @unique
   description    String           @default("")
   avatar         String
@@ -35,6 +42,7 @@ model User {
   testPresets    TestPreset[]
   accessToken    String
   refreshToken   String
+  authProvider   AuthProvider     @default(DEFAULT)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 }

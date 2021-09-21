@@ -30,13 +30,25 @@ registerEnumType(UserBadge, {
   description: 'User Badges',
 });
 
+export enum AuthProvider {
+  DEFAULT = 'DEFAULT',
+  DISCORD = 'DISCORD',
+  GITHUB = 'GITHUB',
+  GOOGLE = 'GOOGLE',
+}
+
+registerEnumType(AuthProvider, {
+  name: 'AuthProvider',
+  description: 'User auth provider service',
+});
+
 @ObjectType()
 export class User extends BaseModel {
   @Field(() => String, { nullable: true })
   username?: string;
 
   @Field(() => String, { nullable: true })
-  discordId?: string;
+  oauthId?: string;
 
   @Field(() => String, { nullable: true })
   description?: string;
@@ -58,6 +70,9 @@ export class User extends BaseModel {
 
   @Field(() => UserBadge, { nullable: true })
   badge?: UserBadge;
+
+  @Field(() => AuthProvider, { nullable: true })
+  authProvider?: AuthProvider;
 
   @Field(() => [UserOnUser], { nullable: true })
   followedBy?: UserOnUser[];
