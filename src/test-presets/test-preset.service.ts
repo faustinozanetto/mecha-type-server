@@ -5,8 +5,8 @@ import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-r
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserBadge } from 'models/user/user.model';
-import { CreateTestPresetInput } from 'resolvers/testPreset/dto/create-test-preset.input';
-import { TestPresetsFindInput } from 'resolvers/testPreset/dto/test-presets-find.input';
+import { CreateTestPresetInput } from 'test-presets/dto/create-test-preset.input';
+import { TestPresetsFindInput } from 'test-presets/dto/test-presets-find.input';
 import { validateAuthCookies } from 'utils/helper-functions';
 import { PrismaService } from '../prisma/prisma.service';
 

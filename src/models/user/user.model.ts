@@ -32,20 +32,17 @@ registerEnumType(UserBadge, {
 
 @ObjectType()
 export class User extends BaseModel {
-  @Field(() => String)
-  name: string;
+  @Field(() => String, { nullable: true })
+  username?: string;
 
   @Field(() => String, { nullable: true })
-  email?: string;
-
-  @Field(() => Date, { nullable: true })
-  emailVerified?: Date | null;
+  discordId?: string;
 
   @Field(() => String, { nullable: true })
   description?: string;
 
   @Field(() => String, { nullable: true })
-  image?: string;
+  avatar?: string;
 
   @Field(() => String, { nullable: true })
   country?: string;

@@ -6,14 +6,19 @@ import { UserFollowersResponse } from 'models/responses/user/user-followers-resp
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
 import { User, UserFilterBy } from 'models/user/user.model';
-import { PrismaService } from 'prisma/prisma.service';
-import { UserService } from 'services/user.service';
+import { UserService } from 'user/user.service';
 import { UserUpdateInput } from './dto/user-update.input';
 import { UserWhereInput } from './dto/user-where.input';
+import type { MechaContext } from 'types/types';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService, private prisma: PrismaService) {}
+  constructor(private readonly userService: UserService) {}
+
+  @Query(() => UserResponse)
+  async me(@Context() { req }: MechaContext): Promise<UserResponse> {
+    return await this.userService.me(req);
+  }
 
   @Query(() => UserResponse)
   async user(

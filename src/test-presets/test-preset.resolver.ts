@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TestPreset } from 'models/test-preset/test-preset.model';
 import { CreateTestPresetInput } from './dto/create-test-preset.input';
-import { TestPresetService } from 'services/test-preset.service';
+import { TestPresetService } from 'test-presets/test-preset.service';
 import { TestPresetsFindInput } from './dto/test-presets-find.input';
 import { TestPresetResponse } from 'models/responses/test-preset/test-preset-response.model';
 import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';

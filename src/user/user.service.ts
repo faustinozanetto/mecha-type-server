@@ -1,9 +1,8 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, UserBadge, UserFilterBy } from 'models/user/user.model';
-import { UserWhereInput } from 'resolvers/user/dto/user-where.input';
-import { UserUpdateInput } from 'resolvers/user/dto/user-update.input';
-
+import { UserWhereInput } from 'user/dto/user-where.input';
+import { UserUpdateInput } from 'user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
@@ -21,6 +20,26 @@ import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.respon
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
   constructor(@Inject(REQUEST) private request: Request, private prisma: PrismaService) {}
+
+  /**
+   *
+   * @param request Request param to retrieve current user from.
+   * @returns The user response containing the user and or errors.
+   */
+  async me(request: Request): Promise<UserResponse> {
+    if (!request) {
+      return {
+        errors: [
+          {
+            field: 'user',
+            message: 'An error ocurred',
+          },
+        ],
+      };
+    }
+    const user = request.user as User;
+    return { user };
+  }
 
   /**
    * @param where Where parameter to filter the user.
@@ -293,10 +312,9 @@ export class UserService {
     const updatedUser = await this.prisma.user.update({
       where,
       data: {
-        name: data.name,
+        username: data.name,
         description: data.description,
-        email: data.email,
-        image: data.image,
+        avatar: data.image,
         country: data.country,
         keystrokes: data.keystrokes,
         testsCompleted: data.testsCompleted,

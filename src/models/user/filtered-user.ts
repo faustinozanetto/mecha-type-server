@@ -4,10 +4,10 @@ import { BaseModel } from '../base.model';
 @ObjectType()
 export class FilteredUser extends BaseModel {
   @Field(() => String)
-  name: string;
+  username: string;
 
   @Field(() => String)
-  image: string;
+  avatar: string;
 
   @Field(() => String)
   country: string;
