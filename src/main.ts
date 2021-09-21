@@ -7,6 +7,7 @@ import { CorsConfig, NestConfig } from './config/config.interface';
 import * as pg from 'pg';
 import * as passport from 'passport';
 import * as session from 'express-session';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pgSession = require('connect-pg-simple')(session);
@@ -24,12 +25,14 @@ const productionPool = new pg.Pool({
 });
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   const nestConfig = configService.get<NestConfig>('nest');
   const corsConfig = configService.get<CorsConfig>('cors');
 
   app.setGlobalPrefix('api');
+
+  app.set('trust proxy', 1);
   // Cors
   if (corsConfig?.enabled) {
     app.enableCors({
@@ -45,10 +48,7 @@ async function bootstrap() {
     session({
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: 'lax',
-        secure: __PROD__,
       },
-      name: 'session',
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,

@@ -137,15 +137,11 @@ export class AuthController {
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
   logout(@Req() req: Request, @Res() res: Response) {
-    req.logOut();
-    req.session.destroy(() => {
-      res
-        .clearCookie('session', {
-          maxAge: 0,
-          sameSite: 'lax',
-          secure: __PROD__,
-        })
-        .sendStatus(200);
-    });
+    if (req.session) {
+      req.session.destroy(() => {
+        res.cookie('connect.sid', '');
+        req.logOut();
+      });
+    }
   }
 }
