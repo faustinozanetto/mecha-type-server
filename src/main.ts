@@ -22,6 +22,7 @@ const pgPool = new pg.Pool({
 
 const productionPool = new pg.Pool({
   connectionString: __DB_URL__,
+  ssl: true,
 });
 
 async function bootstrap() {
