@@ -18,14 +18,20 @@ import { Module } from '@nestjs/common';
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     AuthModule,
     PassportModule.register({ session: true }),
-    GraphQLModule.forRoot({
-      cors: {
-        origin: __ORIGIN__,
-        credentials: true,
+    GraphQLModule.forRootAsync({
+      useFactory: async () => {
+        return {
+          installSubscriptionHandlers: true,
+          cors: {
+            origin: __ORIGIN__,
+            credentials: true,
+          },
+          autoSchemaFile: './src/schema.graphql',
+          playground: !__PROD__,
+          useGlobalPrefix: true,
+          context: ({ req, res }) => ({ req, res }),
+        };
       },
-      autoSchemaFile: './src/schema.graphql',
-      playground: !__PROD__,
-      useGlobalPrefix: true,
     }),
     HttpModule,
     DiscordModule,

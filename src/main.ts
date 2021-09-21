@@ -46,7 +46,10 @@ async function bootstrap() {
     session({
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: 'none',
+        sameSite: 'lax',
+        httpOnly: true,
+        secure: __PROD__,
+        domain: __PROD__ ? '.mecha-type.vercel.app' : undefined,
       },
       secret: process.env.SESSION_SECRET,
       resave: false,
