@@ -29,18 +29,15 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   const nestConfig = configService.get<NestConfig>('nest');
-  const corsConfig = configService.get<CorsConfig>('cors');
 
   app.setGlobalPrefix('api');
 
   app.set('trust proxy', 1);
   // Cors
-  if (corsConfig?.enabled) {
-    app.enableCors({
-      origin: __ORIGIN__,
-      credentials: true,
-    });
-  }
+  app.enableCors({
+    origin: __ORIGIN__,
+    credentials: true,
+  });
 
   // Validation
   app.useGlobalPipes(new ValidationPipe());
@@ -49,6 +46,7 @@ async function bootstrap() {
     session({
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: 'none',
       },
       secret: process.env.SESSION_SECRET,
       resave: false,

@@ -21,6 +21,7 @@ import { Module } from '@nestjs/common';
     GraphQLModule.forRoot({
       cors: {
         origin: __ORIGIN__,
+        credentials: true,
       },
       autoSchemaFile: './src/schema.graphql',
       playground: !__PROD__,
