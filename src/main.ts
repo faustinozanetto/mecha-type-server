@@ -53,11 +53,11 @@ async function bootstrap() {
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      store: new pgSession({
-        pool: __PROD__ ? productionPool : pgPool, // Connection pool
-        tableName: 'Sessions', // Use another table-name than
-        createTableIfMissing: true,
-      }),
+      // store: new pgSession({
+      //   pool: __PROD__ ? productionPool : pgPool, // Connection pool
+      //   tableName: 'Sessions', // Use another table-name than
+      //   createTableIfMissing: true,
+      // }),
     }),
   );
 
