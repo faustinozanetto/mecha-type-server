@@ -23,6 +23,11 @@ export class UserResolver {
     return await this.userService.me(context);
   }
 
+  @Mutation(() => Boolean)
+  async logout(@Context() context: MechaContext): Promise<boolean> {
+    return await this.userService.logout(context);
+  }
+
   @Query(() => UserResponse)
   async user(
     @Args('where', { type: () => UserWhereInput }) where: UserWhereInput,

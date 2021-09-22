@@ -6,7 +6,7 @@ import { UserUpdateInput } from 'user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
-import { calculateAverage, validateAuthCookies } from 'utils/helper-functions';
+import { calculateAverage } from 'utils/helper-functions';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
 import { FilteredUser } from 'models/user/filtered-user';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
@@ -40,6 +40,20 @@ export class UserService {
     // @ts-ignore
     const user = context.req.session.passport.user as User;
     return { user };
+  }
+
+  async logout(context: MechaContext): Promise<boolean> {
+    return new Promise((resolve) =>
+      context.req.session.destroy((err) => {
+        context.res.clearCookie('connect.sid');
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      }),
+    );
   }
 
   /**

@@ -248,6 +248,7 @@ input TestPresetWhereInput {
 }
 
 type Mutation {
+  logout: Boolean!
   updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
   followUser(targetUserId: String!, userId: String!): FollowUserResponse!
   unfollowUser(targetUserId: String!, userId: String!): UnfollowUserResponse!

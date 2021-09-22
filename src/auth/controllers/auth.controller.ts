@@ -1,11 +1,6 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
-import {
-  AuthenticatedGuard,
-  DiscordAuthGuard,
-  GithubAuthGuard,
-  GoogleAuthGuard,
-} from 'auth/utils/guards';
+import { Controller, Get, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
+import { DiscordAuthGuard, GithubAuthGuard } from 'auth/utils/guards';
 import { __AUTH_REDIRECT__, __URL__ } from 'utils/constants';
 
 @Controller({
@@ -98,15 +93,5 @@ export class AuthController {
         },
       ],
     });
-  }
-
-  /**
-   * GET /api/auth/logout
-   * Logging the user out
-   */
-  @Get('logout')
-  @UseGuards(AuthenticatedGuard)
-  logout(@Req() req: Request) {
-    req.logOut();
   }
 }
