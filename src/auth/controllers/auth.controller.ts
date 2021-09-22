@@ -100,7 +100,7 @@ export class AuthController {
   @UseGuards(AuthenticatedGuard)
   status(@Req() req: Request, @Res() res: Response) {
     const user = req.user as UserStatus;
-    return res.json({ id: user.id, username: user.username });
+    return res.json({ id: user.id, username: user.username }).status(200);
   }
 
   /**
@@ -136,12 +136,7 @@ export class AuthController {
    */
   @Get('logout')
   @UseGuards(AuthenticatedGuard)
-  logout(@Req() req: Request, @Res() res: Response) {
-    if (req.session) {
-      req.session.destroy(() => {
-        res.cookie('connect.sid', '');
-        req.logOut();
-      });
-    }
+  logout(@Req() req: Request) {
+    req.logOut();
   }
 }

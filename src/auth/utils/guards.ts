@@ -54,6 +54,6 @@ export class AuthenticatedGuard implements CanActivate {
 export class GraphQLAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req.user;
+    return ctx.getContext().req?.session?.passport?.user;
   }
 }

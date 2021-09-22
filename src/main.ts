@@ -1,29 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { __DB_URL__, __ORIGIN__, __PROD__ } from 'utils/constants';
+import { __ORIGIN__ } from 'utils/constants';
 import { AppModule } from './app.module';
-import { CorsConfig, NestConfig } from './config/config.interface';
-import * as pg from 'pg';
+import * as cookieParser from 'cookie-parser';
+import { NestConfig } from './config/config.interface';
+import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
-import * as session from 'express-session';
+
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const pgSession = require('connect-pg-simple')(session);
-const pgPool = new pg.Pool({
-  // Insert pool options here
-  host: 'localhost',
-  port: 5432,
-  user: 'postgres',
-  password: '4532164mine',
-  ssl: false,
-});
-
-const productionPool = new pg.Pool({
-  connectionString: __DB_URL__,
-  ssl: true,
-});
+require('dotenv').config();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -41,26 +29,9 @@ async function bootstrap() {
 
   // Validation
   app.useGlobalPipes(new ValidationPipe());
-
-  app.use(
-    session({
-      cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: 'lax',
-        httpOnly: true,
-        secure: __PROD__,
-        domain: __PROD__ ? '.mecha-type.vercel.app' : undefined,
-      },
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      // store: new pgSession({
-      //   pool: __PROD__ ? productionPool : pgPool, // Connection pool
-      //   tableName: 'Sessions', // Use another table-name than
-      //   createTableIfMissing: true,
-      // }),
-    }),
-  );
+  app.use(cookieParser());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
 
   app.use(passport.initialize());
   app.use(passport.session());

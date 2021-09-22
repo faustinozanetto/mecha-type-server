@@ -1,4 +1,4 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthProvider, User, UserBadge, UserFilterBy } from 'models/user/user.model';
 import { UserWhereInput } from 'user/dto/user-where.input';
@@ -11,23 +11,21 @@ import { FilteredUsersResponse } from 'models/responses/user/filtered-users-resp
 import { FilteredUser } from 'models/user/filtered-user';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
 import { UserFollower } from 'models/user/user-follower.model';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { FollowUserResponse } from 'models/responses/user/follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
+import { MechaContext } from 'types/types';
 
 @Injectable()
-@Injectable({ scope: Scope.REQUEST })
 export class UserService {
-  constructor(@Inject(REQUEST) private request: Request, private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   /**
    *
    * @param request Request param to retrieve current user from.
    * @returns The user response containing the user and or errors.
    */
-  async me(request: Request): Promise<UserResponse> {
-    if (!request) {
+  async me(context: MechaContext): Promise<UserResponse> {
+    if (!context.req) {
       return {
         errors: [
           {
@@ -37,7 +35,10 @@ export class UserService {
         ],
       };
     }
-    const user = request.user as User;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const user = context.req.session.passport.user as User;
     return { user };
   }
 
@@ -357,29 +358,13 @@ export class UserService {
     };
   }
 
-  async updateUser(
-    where: UserWhereInput,
-    data: UserUpdateInput,
-    request: Request,
-  ): Promise<UserResponse> {
+  async updateUser(where: UserWhereInput, data: UserUpdateInput): Promise<UserResponse> {
     if (!where || !data) {
       return {
         errors: [
           {
             field: 'input',
             message: 'Input is invalid',
-          },
-        ],
-      };
-    }
-    // Validating wether user is logged in or not.
-    const validAuthCookie = validateAuthCookies(request);
-    if (!validAuthCookie) {
-      return {
-        errors: [
-          {
-            field: 'auth',
-            message: 'not authorized',
           },
         ],
       };
@@ -477,24 +462,17 @@ export class UserService {
     return { users: followers };
   }
 
-  async followUser(
-    userId: string,
-    targetUserId: string,
-    request: Request,
-  ): Promise<FollowUserResponse> {
-    // Validating wether user is logged in or not.
-    const validAuthCookie = validateAuthCookies(request);
-    if (!validAuthCookie) {
+  async followUser(userId: string, targetUserId: string): Promise<FollowUserResponse> {
+    if (userId === '' || targetUserId === '') {
       return {
         errors: [
           {
-            field: 'auth',
-            message: 'not authorized',
+            field: 'id',
+            message: 'invalid input',
           },
         ],
       };
     }
-
     const exists = await this.prisma.userOnUser.findMany({
       where: {
         childId: targetUserId,
@@ -515,24 +493,7 @@ export class UserService {
     };
   }
 
-  async unfollowUser(
-    userId: string,
-    targetUserId: string,
-    request: Request,
-  ): Promise<UnfollowUserResponse> {
-    // Validating wether user is logged in or not.
-    const validAuthCookie = validateAuthCookies(request);
-    if (!validAuthCookie) {
-      return {
-        errors: [
-          {
-            field: 'auth',
-            message: 'not authorized',
-          },
-        ],
-      };
-    }
-
+  async unfollowUser(userId: string, targetUserId: string): Promise<UnfollowUserResponse> {
     await this.prisma.userOnUser.deleteMany({
       where: {
         childId: targetUserId,

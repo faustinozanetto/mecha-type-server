@@ -10,14 +10,16 @@ import { UserService } from 'user/user.service';
 import { UserUpdateInput } from './dto/user-update.input';
 import { UserWhereInput } from './dto/user-where.input';
 import type { MechaContext } from 'types/types';
+import { UseGuards } from '@nestjs/common';
+import { GraphQLAuthGuard } from 'auth/utils/guards';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => UserResponse)
-  async me(@Context() { req }: MechaContext): Promise<UserResponse> {
-    return await this.userService.me(req);
+  async me(@Context() context: MechaContext): Promise<UserResponse> {
+    return await this.userService.me(context);
   }
 
   @Query(() => UserResponse)
@@ -56,29 +58,29 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
+  @UseGuards(GraphQLAuthGuard)
   async updateUser(
     @Args('where') where: UserWhereInput,
     @Args('data') data: UserUpdateInput,
-    @Context() { req },
   ): Promise<UserResponse> {
-    return await this.userService.updateUser(where, data, req);
+    return await this.userService.updateUser(where, data);
   }
 
+  @UseGuards(GraphQLAuthGuard)
   @Mutation(() => FollowUserResponse)
   async followUser(
     @Args('userId', { type: () => String }) userId: string,
     @Args('targetUserId', { type: () => String }) targetUserId: string,
-    @Context() { req },
   ) {
-    return this.userService.followUser(userId, targetUserId, req);
+    return this.userService.followUser(userId, targetUserId);
   }
 
   @Mutation(() => UnfollowUserResponse)
+  @UseGuards(GraphQLAuthGuard)
   async unfollowUser(
     @Args('userId', { type: () => String }) userId: string,
     @Args('targetUserId', { type: () => String }) targetUserId: string,
-    @Context() { req },
   ) {
-    return this.userService.unfollowUser(userId, targetUserId, req);
+    return this.userService.unfollowUser(userId, targetUserId);
   }
 }

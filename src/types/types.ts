@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { Request, Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthProvider } from 'models/user/user.model';
 
 export type UserDetails = {

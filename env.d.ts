@@ -4,6 +4,11 @@ declare namespace NodeJS {
     PORT?: string;
     ENVIRONMENT: Environment;
     SESSION_SECRET: string;
+    DB_HOST: string;
+    DB_NAME: string;
+    DB_PORT: number;
+    DB_USER: string;
+    DB_PASS: string;
     DISCORD_CLIENT_ID?: string;
     DISCORD_CLIENT_SECRET?: string;
     DISCORD_CALLBACK_URL?: string;
