@@ -17,6 +17,7 @@ import { GraphQLAuthGuard } from 'auth/utils/guards';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(GraphQLAuthGuard)
   @Query(() => UserResponse)
   async me(@Context() context: MechaContext): Promise<UserResponse> {
     return await this.userService.me(context);
@@ -57,8 +58,8 @@ export class UserResolver {
     return this.userService.followsUser(userId, targetUserId);
   }
 
-  @Mutation(() => UserResponse)
   @UseGuards(GraphQLAuthGuard)
+  @Mutation(() => UserResponse)
   async updateUser(
     @Args('where') where: UserWhereInput,
     @Args('data') data: UserUpdateInput,
@@ -75,8 +76,8 @@ export class UserResolver {
     return this.userService.followUser(userId, targetUserId);
   }
 
-  @Mutation(() => UnfollowUserResponse)
   @UseGuards(GraphQLAuthGuard)
+  @Mutation(() => UnfollowUserResponse)
   async unfollowUser(
     @Args('userId', { type: () => String }) userId: string,
     @Args('targetUserId', { type: () => String }) targetUserId: string,

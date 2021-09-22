@@ -7,6 +7,8 @@ import { TestPresetResponse } from 'models/responses/test-preset/test-preset-res
 import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { User } from 'models/user/user.model';
+import { UseGuards } from '@nestjs/common';
+import { GraphQLAuthGuard } from 'auth/utils/guards';
 
 @Resolver(() => TestPreset)
 export class TestPresetResolver {
@@ -42,11 +44,11 @@ export class TestPresetResolver {
     return await this.testPresetService.createTestPreset(data);
   }
 
+  @UseGuards(GraphQLAuthGuard)
   @Mutation(() => TestPresetResponse)
   async createTestPresetUser(
     @Args('data', { type: () => CreateTestPresetInput }) data: CreateTestPresetInput,
-    @Context() { req },
   ): Promise<TestPresetResponse> {
-    return await this.testPresetService.createTestPresetUser(data, req);
+    return await this.testPresetService.createTestPresetUser(data);
   }
 }

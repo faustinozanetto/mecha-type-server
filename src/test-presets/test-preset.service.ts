@@ -110,22 +110,7 @@ export class TestPresetService {
     return { testPreset: parsedPreset };
   }
 
-  async createTestPresetUser(
-    data: CreateTestPresetInput,
-    request: Request,
-  ): Promise<TestPresetResponse> {
-    // Validating wether user is logged in or not.
-    const validAuthCookie = validateAuthCookies(request);
-    if (!validAuthCookie) {
-      return {
-        errors: [
-          {
-            field: 'auth',
-            message: 'not authorized',
-          },
-        ],
-      };
-    }
+  async createTestPresetUser(data: CreateTestPresetInput): Promise<TestPresetResponse> {
     const preset = await this.prisma.testPreset.create({
       data: {
         type: data.type,

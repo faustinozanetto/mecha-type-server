@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { __ORIGIN__ } from 'utils/constants';
 import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
 import { NestConfig } from './config/config.interface';
+import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
 
@@ -14,29 +14,42 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 require('dotenv').config();
 
 async function bootstrap() {
+  /*========= INITIALIZATION =========*/
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  /*========= CONFIG =========*/
   const configService = app.get(ConfigService);
   const nestConfig = configService.get<NestConfig>('nest');
 
+  /*========= PREFIX =========*/
   app.setGlobalPrefix('api');
 
+  /*========= VERSIONING =========*/
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
   app.set('trust proxy', 1);
-  // Cors
+
+  /*========= CORS =========*/
   app.enableCors({
     origin: __ORIGIN__,
     credentials: true,
   });
 
-  // Validation
+  /*========= VALIDATION =========*/
   app.useGlobalPipes(new ValidationPipe());
+
+  /*========= MIDDLEAWARES =========*/
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
 
+  /*========= PASSPORT =========*/
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // App listen
+  /*========= START =========*/
   await app.listen(process.env.PORT || nestConfig?.port || 4000);
 }
 
