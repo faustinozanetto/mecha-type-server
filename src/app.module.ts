@@ -64,7 +64,7 @@ const productionPool = new pg.Pool({
             cookie: {
               secure: __PROD__,
               maxAge: 7 * 24 * 60 * 60 * 1000,
-              sameSite: 'lax',
+              sameSite: 'none',
               httpOnly: true,
             },
             resave: false,
