@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -7,10 +8,8 @@ import { NestConfig } from './config/config.interface';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
-
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
 async function bootstrap() {

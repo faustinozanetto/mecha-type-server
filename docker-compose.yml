@@ -1,21 +1,23 @@
 version: '3.8'
 services:
-  nest-api:
+  mecha-type-api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nest-api
+    container_name: mecha-type-api
     restart: always
     ports:
       - 4000:4000
+    expose:
+      - 4000
     depends_on:
-      - postgres
+      - mecha-type-db
     env_file:
       - .env
 
-  postgres:
+  mecha-type-db:
     image: postgres:13
-    container_name: postgresprisma
+    container_name: mecha-type-db
     restart: always
     ports:
       - '5432:5432'

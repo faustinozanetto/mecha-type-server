@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import config from './config/config';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
@@ -13,27 +14,48 @@ import { UserModule } from 'user/user.module';
 import { TestPresetModule } from 'test-presets/test-preset.module';
 import { Module } from '@nestjs/common';
 import { NestSessionOptions, SessionModule } from 'nestjs-session';
-import * as pg from 'pg';
 import * as session from 'express-session';
+import * as pgSession from 'connect-pg-simple';
+// require('dotenv').config();
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pgSession = require('connect-pg-simple')(session);
-const pgPool = new pg.Pool({
-  // Insert pool options here
-  host: 'localhost',
-  port: 5432,
-  user: 'postgres',
-  password: '4532164mine',
-});
+// // 1-) Connection details
+// const prodConn: ConnectionTypes = {
+//   host: process.env.DB_HOST,
+//   database: process.env.DB_NAME,
+//   port: process.env.DB_PORT,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASS,
+//   ssl: { rejectUnauthorized: false },
+// };
 
-const productionPool = new pg.Pool({
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  ssl: { rejectUnauthorized: false },
-});
+// type ConnectionTypes = {
+//   host: string;
+//   port: number;
+//   user: string;
+//   database: string;
+//   password: string;
+//   ssl: any;
+// };
+
+// const devConn: ConnectionTypes = {
+//   host: 'localhost',
+//   port: 5432,
+//   user: 'postgres',
+//   database: 'mecha-type',
+//   // prettier-ignore
+//   password: "4532164mine",
+//   ssl: { rejectUnauthorized: false },
+// };
+
+// // 2-) Create an instance of connect-pg-simple and pass it session
+// const pgSession = require('connect-pg-simple')(session);
+
+// // 3-) Create a config option for store
+// const pgStoreConfig = {
+//   pgPromise: require('pg-promise')({ promiseLib: require('bluebird') })({
+//     conObject: __PROD__ ? prodConn : devConn,
+//   }),
+// };
 
 @Module({
   imports: [
@@ -60,20 +82,16 @@ const productionPool = new pg.Pool({
       useFactory: async (): Promise<NestSessionOptions> => {
         return {
           session: {
+            // store: new pgSession(pgStoreConfig),
             secret: process.env.SESSION_SECRET,
             cookie: {
-              secure: true,
+              secure: __PROD__,
               maxAge: 7 * 24 * 60 * 60 * 1000,
-              sameSite: 'none',
+              sameSite: false,
               httpOnly: true,
             },
             resave: false,
             saveUninitialized: false,
-            store: new pgSession({
-              pool: __PROD__ ? productionPool : pgPool, // Connection pool
-              tableName: 'Sessions', // Use another table-name than
-              createTableIfMissing: true,
-            }),
           },
         };
       },
