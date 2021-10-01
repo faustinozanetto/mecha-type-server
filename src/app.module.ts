@@ -87,7 +87,7 @@ import * as pgSession from 'connect-pg-simple';
             cookie: {
               secure: __PROD__,
               maxAge: 7 * 24 * 60 * 60 * 1000,
-              sameSite: 'lax',
+              sameSite: 'none',
             },
             resave: false,
             saveUninitialized: true,
