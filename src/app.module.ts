@@ -85,7 +85,7 @@ import * as pgSession from 'connect-pg-simple';
             // store: new pgSession(pgStoreConfig),
             secret: process.env.SESSION_SECRET,
             cookie: {
-              secure: __PROD__,
+              secure: true,
               maxAge: 7 * 24 * 60 * 60 * 1000,
               sameSite: 'none',
             },
