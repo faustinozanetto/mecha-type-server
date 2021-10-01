@@ -40,6 +40,7 @@
     "@nestjs/graphql": "9.0.4",
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "8.0.7",
+    "@nestjs/typeorm": "^8.0.2",
     "@prisma/client": "3.1.1",
     "apollo-server": "3.3.0",
     "apollo-server-express": "^3.3.0",
@@ -58,6 +59,7 @@
     "graphql-fields": "^2.0.3",
     "graphql-scalars": "^1.10.1",
     "graphql-type-json": "^0.3.2",
+    "mongodb": "3.6.0",
     "nestjs-session": "^2.0.0",
     "passport": "^0.4.0",
     "passport-discord": "^0.1.4",
@@ -72,6 +74,7 @@
     "rxjs": "^7.3.0",
     "tsconfig-paths": "^3.11.0",
     "tscpaths": "0.0.9",
+    "typeorm": "^0.2.37",
     "typescript": "^4.4.3"
   },
   "devDependencies": {
