@@ -14,12 +14,11 @@ import { FollowUserResponse } from 'models/responses/user/follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { MechaContext } from 'types/types';
 import { UserEntity } from 'entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private connection: Connection) {}
+  constructor(private prisma: PrismaService) {}
 
   /**
    *
@@ -68,8 +67,14 @@ export class UserService {
         errors: [{ field: 'where', message: 'where parameter not specified' }],
       };
     }
-    const user = await this.connection.getRepository(UserEntity).findOne({
+    const user = await this.prisma.user.findUnique({
       where,
+      include: {
+        accuracy: true,
+        wordsPerMinute: true,
+        charsPerMinute: true,
+        testPresets: true,
+      },
     });
 
     if (!user) {
@@ -122,7 +127,10 @@ export class UserService {
       };
     }
 
-    const users = await this.connection.getRepository(UserEntity).find({ take });
+    const users = await this.prisma.user.findMany({
+      take,
+      where: {},
+    });
     if (!users) {
       return {
         errors: [
@@ -174,7 +182,7 @@ export class UserService {
 
     switch (filterBy) {
       case UserFilterBy.ACCURACY: {
-        const users = await this.connection.getRepository(UserEntity).find({
+        const users = await this.prisma.user.findMany({
           skip: page * PAGE_SIZE,
           take: PAGE_SIZE,
           where: {},
@@ -378,11 +386,10 @@ export class UserService {
     }
 
     // Updating the user
-    const updatedUser = await this.connection
-      .getRepository(UserEntity)
-      .createQueryBuilder()
-      .update()
-      .set({
+    // Updating the user
+    const updatedUser = await this.prisma.user.update({
+      where,
+      data: {
         username: data.name,
         description: data.description,
         avatar: data.image,
@@ -390,9 +397,18 @@ export class UserService {
         keystrokes: data.keystrokes,
         testsCompleted: data.testsCompleted,
         badge: data.badge,
-      })
-      .where({ whereFactory: where })
-      .execute();
+        wordsPerMinute: { create: [data.wordsPerMinute] },
+        charsPerMinute: { create: [data.charsPerMinute] },
+        accuracy: { create: [data.accuracy] },
+      },
+      include: {
+        accuracy: true,
+        wordsPerMinute: true,
+        charsPerMinute: true,
+        testPresets: true,
+      },
+    });
+
     console.log('UPDATED USER: ' + updatedUser);
 
     // If an error ocurred we return error
@@ -484,10 +500,6 @@ export class UserService {
     if (exists[0] && exists[0].id !== undefined) {
       return { follow: false };
     }
-    const follow = await this.connection
-      .createQueryBuilder()
-      .relation(UserEntity, 'followers')
-      .add({});
     const follow = await this.prisma.userOnUser.create({
       data: {
         parent: { connect: { id: userId } },
@@ -500,11 +512,6 @@ export class UserService {
   }
 
   async unfollowUser(userId: string, targetUserId: string): Promise<UnfollowUserResponse> {
-    const res = await this.connection
-      .createQueryBuilder()
-      .relation(UserEntity, 'followers')
-      .remove({});
-    this.usersRepository.findOne({ where: { id: targetUserId } });
     await this.prisma.userOnUser.deleteMany({
       where: {
         childId: targetUserId,

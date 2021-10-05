@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { __ORIGIN__, __PROD__ } from 'utils/constants';
+import { __ORIGIN__ } from 'utils/constants';
 import { AppModule } from './app.module';
 import { NestConfig } from './config/config.interface';
 import * as cookieParser from 'cookie-parser';
@@ -11,9 +11,8 @@ import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
 import * as session from 'express-session';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { TypeormStore } from 'connect-typeorm/out';
-import { getRepository } from 'typeorm';
-import { SessionEntity } from 'entities/session.entity';
+import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { PrismaClient } from '.prisma/client';
 
 require('dotenv').config();
 
@@ -42,21 +41,21 @@ async function bootstrap() {
   });
 
   /*========= SESSION =========*/
-  const sessionRepo = getRepository(SessionEntity);
+  const prisma = new PrismaClient();
   app.use(
     session({
-      store: new TypeormStore({
-        cleanupLimit: 2,
-        limitSubquery: false, // If using MariaDB.
-        ttl: 86400,
-      }).connect(sessionRepo),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      store: new PrismaSessionStore(prisma, {
+        checkPeriod: 2 * 60 * 1000, //ms
+        dbRecordIdIsSessionId: true,
+        dbRecordIdFunction: undefined,
+      }),
       secret: process.env.SESSION_SECRET,
       cookie: {
-        secure: __PROD__,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: 'none',
       },
-      resave: false,
+      resave: true,
       saveUninitialized: true,
     }),
   );

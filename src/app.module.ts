@@ -10,13 +10,8 @@ import { AuthModule } from 'auth/auth.module';
 import { UserModule } from 'user/user.module';
 import { TestPresetModule } from 'test-presets/test-preset.module';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'entities/user.entity';
-import { TestPresetEntity } from 'entities/test-preset.entity';
-import { WordsPerMinuteEntity } from 'entities/words-per-minute.entity';
-import { CharsPerMinuteEntity } from 'entities/chars-per-minute.entity';
-import { AccuracyEntity } from 'entities/accuracy.entity';
-import { SessionEntity } from 'entities/session.entity';
+import { PrismaService } from 'prisma/prisma.service';
+import { PrismaModule } from 'prisma/prisma.module';
 // require('dotenv').config();
 
 @Module({
@@ -39,32 +34,13 @@ import { SessionEntity } from 'entities/session.entity';
         };
       },
     }),
-    TypeOrmModule.forRootAsync({
-      useFactory: async () => {
-        return {
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'postgres',
-          password: '4532164mine',
-          database: 'mecha-type-typeorm',
-          entities: [
-            UserEntity,
-            TestPresetEntity,
-            WordsPerMinuteEntity,
-            CharsPerMinuteEntity,
-            AccuracyEntity,
-            SessionEntity,
-          ],
-          synchronize: true,
-        };
-      },
-    }),
+    PrismaModule,
+
     DiscordModule,
     UserModule,
     TestPresetModule,
   ],
   controllers: [],
-  providers: [DateScalar],
+  providers: [PrismaService, DateScalar],
 })
 export class AppModule {}

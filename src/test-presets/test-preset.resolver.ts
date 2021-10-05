@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TestPreset } from 'models/test-preset/test-preset.model';
 import { CreateTestPresetInput } from './dto/create-test-preset.input';
 import { TestPresetService } from 'test-presets/test-preset.service';
