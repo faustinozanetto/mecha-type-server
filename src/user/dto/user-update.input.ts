@@ -42,14 +42,14 @@ export class UserUpdateInput {
   @Field(() => UserBadge, { nullable: true })
   badge?: UserBadge;
 
-  @Field(() => InputUpdateInput, { nullable: true })
-  keystrokes?: InputUpdateInput;
+  @Field(() => Int, { nullable: true })
+  keystrokes?: number;
 
-  @Field(() => InputUpdateInput, { nullable: true })
-  testsCompleted?: InputUpdateInput;
+  @Field(() => Int, { nullable: true })
+  testsCompleted?: number;
 
-  @Field(() => InputUpdateInput, { nullable: true })
-  wordsWritten?: InputUpdateInput;
+  @Field(() => Int, { nullable: true })
+  wordsWritten?: number;
 
   @Field(() => WordsPerMinuteCreateInput, { nullable: true })
   wordsPerMinute?: WordsPerMinuteCreateInput;

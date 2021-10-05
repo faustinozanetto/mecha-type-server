@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import { TestPresetEntity } from 'entities/test-preset.entity';
+import { UserEntity } from 'entities/user.entity';
 import { TestPresetResponse } from 'models/responses/test-preset/test-preset-response.model';
 import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
@@ -7,15 +8,17 @@ import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-pres
 import { AuthProvider, UserBadge } from 'models/user/user.model';
 import { CreateTestPresetInput } from 'test-presets/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'test-presets/dto/test-presets-find.input';
-import { validateAuthCookies } from 'utils/helper-functions';
-import { PrismaService } from '../prisma/prisma.service';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class TestPresetService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private connection: Connection) {}
 
   async presetCreator(creatorId: string): Promise<UserResponse> {
-    const user = await this.prisma.user.findUnique({ where: { id: creatorId ?? '' } });
+    const user = await this.connection.getRepository(UserEntity).findOne({
+      where: { id: creatorId },
+    });
+
     return {
       user: {
         ...user,
@@ -38,9 +41,7 @@ export class TestPresetService {
   }
 
   async testPreset(id: string): Promise<TestPresetResponse> {
-    const preset = await this.prisma.testPreset.findUnique({
-      where: { id: id ?? '' },
-    });
+    const preset = await this.connection.getRepository(TestPresetEntity).findOne({ where: { id } });
     return {
       testPreset: {
         ...preset,
@@ -51,7 +52,7 @@ export class TestPresetService {
   }
 
   async testPresets(input: TestPresetsFindInput): Promise<TestPresetsResponse> {
-    const presets = await this.prisma.testPreset.findMany({
+    const presets = await this.connection.getRepository(TestPresetEntity).find({
       take: input.take,
       skip: input.skip,
       where: {
@@ -76,7 +77,7 @@ export class TestPresetService {
   }
 
   async userTestPresets(userId: string): Promise<TestPresetsResponse> {
-    const presets = await this.prisma.testPreset.findMany({
+    const presets = await this.connection.getRepository(TestPresetEntity).find({
       where: { userId },
     });
     const parsedPresets: TestPreset[] = [];
@@ -93,15 +94,13 @@ export class TestPresetService {
   }
 
   async createTestPreset(data: CreateTestPresetInput): Promise<TestPresetResponse> {
-    const preset = await this.prisma.testPreset.create({
-      data: {
-        type: data.type,
-        language: data.language,
-        words: data.words,
-        time: data.time,
-        creatorImage: 'https://i.imgur.com/xuIzYtW.png',
-      },
+    const preset = await this.connection.getRepository(TestPresetEntity).create({
+      type: data.type,
+      language: data.language,
+      words: data.words,
+      time: data.time,
     });
+
     const parsedPreset = {
       ...preset,
       type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
@@ -111,19 +110,15 @@ export class TestPresetService {
   }
 
   async createTestPresetUser(data: CreateTestPresetInput): Promise<TestPresetResponse> {
-    const preset = await this.prisma.testPreset.create({
-      data: {
-        type: data.type,
-        language: data.language,
-        words: data.words,
-        time: data.time,
-        creatorImage: data.creatorImage,
-        user: {
-          connect: {
-            id: data.userId,
-          },
-        },
-      },
+    const user = await this.connection.getRepository(UserEntity).findOne({
+      where: { id: data.userId },
+    });
+    const preset = await this.connection.getRepository(TestPresetEntity).create({
+      type: data.type,
+      language: data.language,
+      words: data.words,
+      time: data.time,
+      user,
     });
     if (!preset) {
       return {
