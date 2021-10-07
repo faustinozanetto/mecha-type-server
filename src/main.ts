@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { __ORIGIN__ } from 'utils/constants';
+import { __ORIGIN__, __PROD__ } from 'utils/constants';
 import { AppModule } from './app.module';
 import { NestConfig } from './config/config.interface';
 import * as cookieParser from 'cookie-parser';
@@ -51,12 +51,14 @@ async function bootstrap() {
         dbRecordIdIsSessionId: true,
         dbRecordIdFunction: undefined,
       }),
+      resave: false,
+      saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
       cookie: {
+        httpOnly: true,
+        secure: __PROD__,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       },
-      resave: true,
-      saveUninitialized: true,
     }),
   );
 

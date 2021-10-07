@@ -24,6 +24,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseGuards(GraphQLAuthGuard)
   async logout(@Context() context: MechaContext): Promise<boolean> {
     return await this.userService.logout(context);
   }

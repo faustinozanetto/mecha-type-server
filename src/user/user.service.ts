@@ -13,7 +13,6 @@ import { UserFollower } from 'models/user/user-follower.model';
 import { FollowUserResponse } from 'models/responses/user/follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { MechaContext } from 'types/types';
-import { UserEntity } from 'entities/user.entity';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()

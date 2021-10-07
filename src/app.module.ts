@@ -35,7 +35,6 @@ import { PrismaModule } from 'prisma/prisma.module';
       },
     }),
     PrismaModule,
-
     DiscordModule,
     UserModule,
     TestPresetModule,

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { TestPresetEntity } from 'entities/test-preset.entity';
-import { UserEntity } from 'entities/user.entity';
 import { TestPresetResponse } from 'models/responses/test-preset/test-preset-response.model';
 import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
