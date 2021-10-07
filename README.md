@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/MechaType/mecha-type-server/dev/assets/logo.png" width="480" height="270"/>
+  <img src="https://raw.githubusercontent.com/Mecha-Type/mecha-type-server/dev/assets/images/logo.png" width="480" height="270"/>
 
 Backend for Mecha Type using NestJS and Prisma.
 
