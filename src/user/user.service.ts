@@ -176,7 +176,7 @@ export class UserService {
         ],
       };
     }
-    const PAGE_SIZE = 2;
+    const PAGE_SIZE = 10;
     const filteredUsers: FilteredUser[] = [];
 
     switch (filterBy) {

@@ -3,8 +3,6 @@
 
 Backend for Mecha Type using NestJS and Prisma.
 
-![Build stable](https://img.shields.io/github/workflow/status/Mecha-Type/mecha-type-server/CI:%20Build/master?color=%2368D391&label=master&logo=github&style=for-the-badge)
-![Build stable](https://img.shields.io/github/workflow/status/Mecha-Type/mecha-type-server/CI:%20Build/dev?color=%2368D391&label=dev&logo=github&style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/Mecha-Type/mecha-type-server?color=%23B794F4&logo=github&style=for-the-badge)
 ![Version](https://img.shields.io/github/package-json/v/Mecha-Type/mecha-type-server/master?color=%23B794F4&label=latest&logo=react&logoColor=ffffff&style=for-the-badge)
 ![Last commit](https://img.shields.io/github/last-commit/Mecha-Type/mecha-type-server/dev?color=%234FD1C5&logo=github&style=for-the-badge)

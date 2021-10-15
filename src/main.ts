@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -14,6 +13,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { PrismaClient } from '.prisma/client';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
 async function bootstrap() {
