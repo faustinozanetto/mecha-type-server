@@ -12,6 +12,7 @@ import { TestPresetModule } from 'test-presets/test-preset.module';
 import { Module } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { PrismaModule } from 'prisma/prisma.module';
+import { TestPresetHistoryModule } from 'test-preset-history/test-preset-history.module';
 // require('dotenv').config();
 
 @Module({
@@ -38,6 +39,7 @@ import { PrismaModule } from 'prisma/prisma.module';
     DiscordModule,
     UserModule,
     TestPresetModule,
+    TestPresetHistoryModule,
   ],
   controllers: [],
   providers: [PrismaService, DateScalar],

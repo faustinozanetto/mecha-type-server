@@ -182,6 +182,11 @@ type TestPresetsResponse {
   errors: [ErrorResponse!]
 }
 
+type TestPresetHistoryResponse {
+  testPresetHistory: TestPresetHistory
+  errors: [ErrorResponse!]
+}
+
 type Query {
   me: UserResponse!
   user(where: UserWhereInput!): UserResponse!
@@ -231,6 +236,8 @@ type Mutation {
   unfollowUser(targetUserId: String!, userId: String!): UnfollowUserResponse!
   createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
+  createTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!): TestPresetHistoryResponse!
+  userCreateTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!, userId: String!): TestPresetHistoryResponse!
 }
 
 input UserUpdateInput {
@@ -284,4 +291,15 @@ input CreateTestPresetInput {
   language: TestLanguage!
   time: Int!
   words: Int!
+}
+
+input CreateTestPresetHistoryInput {
+  userId: String!
+  testPresetId: String!
+  wpm: Float!
+  cpm: Float!
+  accuracy: Float!
+  keystrokes: Float!
+  correctChars: Float!
+  incorrectChars: Float!
 }
