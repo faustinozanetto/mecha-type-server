@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TestPresetHistoryResponse } from 'models/responses/test-preset-history/test-preset-history-response.model';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateTestPresetHistoryInput } from './dto/create-test-preset-history.input';
 
 @Injectable()

@@ -14,6 +14,18 @@
     rxjs "6.6.7"
     source-map "0.7.3"
 
+"@angular-devkit/core@12.2.10", "@angular-devkit/core@^12.2.1":
+  version "12.2.10"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.2.10.tgz#3da62eceef3904f92cd3f860618b4ae513029ce2"
+  integrity sha512-0qhmS7Qvl0hiRVTHxEC/ipFAfzYofPstw0ZITDpEMw+pgHlOZolOlnFrv8LyOXWNqlSIH5fS9D3WF7Hpm7ApYA==
+  dependencies:
+    ajv "8.6.2"
+    ajv-formats "2.1.0"
+    fast-json-stable-stringify "2.1.0"
+    magic-string "0.25.7"
+    rxjs "6.6.7"
+    source-map "0.7.3"
+
 "@angular-devkit/core@12.2.7":
   version "12.2.7"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.2.7.tgz#f114b12d81797c84c9adf6ced7e355565cd4a54a"
@@ -45,6 +57,15 @@
   dependencies:
     "@angular-devkit/core" "12.0.5"
     ora "5.4.0"
+    rxjs "6.6.7"
+
+"@angular-devkit/schematics@12.2.10", "@angular-devkit/schematics@^12.2.1":
+  version "12.2.10"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-12.2.10.tgz#b8d4031053fd76d93caa7f33aeeb67383e37f0ab"
+  integrity sha512-oQ2EWdkEDE+eAttHeviXsvBi85PsntQT+IffjKUZdbQU+Leuk/pKUpTeea1YosU1p4Cz3PKYF+P/Nl5Jy3B7IQ==
+  dependencies:
+    "@angular-devkit/core" "12.2.10"
+    ora "5.4.1"
     rxjs "6.6.7"
 
 "@angular-devkit/schematics@12.2.7":
@@ -1072,6 +1093,15 @@
     prisma "^2.29.1"
     ts-dedent "^2.0.0"
     type-fest "^0.20.2"
+
+"@schematics/angular@~12.2.1":
+  version "12.2.10"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-12.2.10.tgz#c640be969ea7588da14ee5c4d58a6a2ce63b97e6"
+  integrity sha512-hjOWrC/RlZ97oYWO92f5VRu6LDzPHnowDcyGDGvI9wCrfipL4Y7Is6LgFAiVZxCHdRz71MCnES1IXSj5w6UuBA==
+  dependencies:
+    "@angular-devkit/core" "12.2.10"
+    "@angular-devkit/schematics" "12.2.10"
+    jsonc-parser "3.0.0"
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
@@ -5390,6 +5420,16 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-prisma@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/nestjs-prisma/-/nestjs-prisma-0.14.1.tgz#20414719113b122d458d420a91180c38ff77d9ba"
+  integrity sha512-+K15MoYE00aENBBaz+j9WCda+xKSoSwZZDLN63wszKqXkFyRY6pWO7Hh3IFHAPh5dMDHQqD4CVlNzUsy63rTbA==
+  dependencies:
+    "@angular-devkit/core" "^12.2.1"
+    "@angular-devkit/schematics" "^12.2.1"
+    "@schematics/angular" "~12.2.1"
+    typescript "~4.3.5"
+
 nestjs-session@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/nestjs-session/-/nestjs-session-2.0.0.tgz#03fdb5bbc75d73c2a54837270b98ea95315e0e34"
@@ -7210,7 +7250,7 @@ typegraphql-prisma@^0.16.2:
     ts-morph "^12.0.0"
     tslib "^2.3.1"
 
-typescript@4.3.5:
+typescript@4.3.5, typescript@~4.3.5:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
   integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==

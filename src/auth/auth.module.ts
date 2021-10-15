@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { DiscordStrategy } from './utils/discord-strategy';
@@ -9,9 +8,7 @@ import { SessionSerializer } from './utils/serializer';
 @Module({
   controllers: [AuthController],
   providers: [
-    PrismaService,
     DiscordStrategy,
-    // GoogleStrategy,
     GithubStrategy,
     SessionSerializer,
     {
@@ -25,6 +22,6 @@ import { SessionSerializer } from './utils/serializer';
       useClass: AuthService,
     },
   ],
-  imports: [PrismaService],
+  imports: [],
 })
 export class AuthModule {}

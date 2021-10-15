@@ -12,7 +12,7 @@ CREATE TYPE "TestLanguage" AS ENUM ('ENGLISH', 'SPANISH');
 
 -- CreateTable
 CREATE TABLE "Session" (
-    "id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
     "sid" TEXT NOT NULL,
     "data" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
@@ -29,9 +29,6 @@ CREATE TABLE "User" (
     "avatar" TEXT NOT NULL,
     "country" TEXT NOT NULL DEFAULT E'',
     "badge" "UserBadge" NOT NULL DEFAULT E'DEFAULT',
-    "keystrokes" INTEGER NOT NULL DEFAULT 0,
-    "testsCompleted" INTEGER NOT NULL DEFAULT 0,
-    "wordsWritten" INTEGER NOT NULL DEFAULT 0,
     "accessToken" TEXT NOT NULL,
     "refreshToken" TEXT NOT NULL,
     "authProvider" "AuthProvider" NOT NULL DEFAULT E'DEFAULT',
@@ -53,36 +50,20 @@ CREATE TABLE "UserOnUser" (
 );
 
 -- CreateTable
-CREATE TABLE "WordsPerMinute" (
+CREATE TABLE "TestPresetHistory" (
     "id" TEXT NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "userId" TEXT,
+    "userId" TEXT NOT NULL,
+    "testPresetId" TEXT NOT NULL,
+    "wpm" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "cpm" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "accuracy" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "keystrokes" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "correctChars" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "incorrectChars" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "WordsPerMinute_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "CharsPerMinute" (
-    "id" TEXT NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "userId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "CharsPerMinute_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "TypingAccuracy" (
-    "id" TEXT NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "userId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "TypingAccuracy_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TestPresetHistory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -116,13 +97,10 @@ ALTER TABLE "UserOnUser" ADD CONSTRAINT "UserOnUser_childId_fkey" FOREIGN KEY ("
 ALTER TABLE "UserOnUser" ADD CONSTRAINT "UserOnUser_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WordsPerMinute" ADD CONSTRAINT "WordsPerMinute_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TestPresetHistory" ADD CONSTRAINT "TestPresetHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CharsPerMinute" ADD CONSTRAINT "CharsPerMinute_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TypingAccuracy" ADD CONSTRAINT "TypingAccuracy_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TestPresetHistory" ADD CONSTRAINT "TestPresetHistory_testPresetId_fkey" FOREIGN KEY ("testPresetId") REFERENCES "TestPreset"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TestPreset" ADD CONSTRAINT "TestPreset_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

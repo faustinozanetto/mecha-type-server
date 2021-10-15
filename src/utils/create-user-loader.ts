@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader';
 import { AuthProvider, User, UserBadge } from '../models/user/user.model';
-import { PrismaService } from '../prisma/prisma.service';
-
+import { PrismaService } from 'nestjs-prisma';
 export const createUserLoader = (prismaService: PrismaService) =>
   new DataLoader<string, User>(async (userIds) => {
     const users = await prismaService.user.findMany({ where: { id: { in: userIds as string[] } } });

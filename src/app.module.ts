@@ -9,9 +9,8 @@ import { DiscordModule } from 'discord/discord.module';
 import { AuthModule } from 'auth/auth.module';
 import { UserModule } from 'user/user.module';
 import { TestPresetModule } from 'test-presets/test-preset.module';
+import { PrismaModule } from 'nestjs-prisma';
 import { Module } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { PrismaModule } from 'prisma/prisma.module';
 import { TestPresetHistoryModule } from 'test-preset-history/test-preset-history.module';
 // require('dotenv').config();
 
@@ -35,13 +34,15 @@ import { TestPresetHistoryModule } from 'test-preset-history/test-preset-history
         };
       },
     }),
-    PrismaModule,
+    PrismaModule.forRoot({
+      isGlobal: true,
+    }),
     DiscordModule,
     UserModule,
     TestPresetModule,
     TestPresetHistoryModule,
   ],
   controllers: [],
-  providers: [PrismaService, DateScalar],
+  providers: [DateScalar],
 })
 export class AppModule {}

@@ -13,8 +13,7 @@ import { UserFollower } from 'models/user/user-follower.model';
 import { FollowUserResponse } from 'models/responses/user/follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { MechaContext } from 'types/types';
-import { PrismaService } from 'prisma/prisma.service';
-
+import { PrismaService } from 'nestjs-prisma';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
