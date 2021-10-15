@@ -2,21 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type CharsPerMinute {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date!
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
-  amount: Float!
-  userId: String!
-}
-
-"""Date custom scalar type"""
-scalar Date
-
 type TestPreset {
   id: String!
 
@@ -34,6 +19,9 @@ type TestPreset {
   creator: User!
 }
 
+"""Date custom scalar type"""
+scalar Date
+
 """Test Type"""
 enum TestType {
   WORDS
@@ -44,18 +32,6 @@ enum TestType {
 enum TestLanguage {
   ENGLISH
   SPANISH
-}
-
-type TypingAccuracy {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date!
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
-  amount: Float!
-  userId: String!
 }
 
 type UserOnUser {
@@ -72,7 +48,7 @@ type UserOnUser {
   parentId: String
 }
 
-type WordsPerMinute {
+type TestPresetHistory {
   id: String!
 
   """Identifies the date and time when the object was created."""
@@ -80,8 +56,14 @@ type WordsPerMinute {
 
   """Identifies the date and time when the object was last updated."""
   updatedAt: Date!
-  amount: Float!
   userId: String!
+  testPresetId: String!
+  wpm: Float!
+  cpm: Float!
+  accuracy: Float!
+  keystrokes: Float!
+  correctChars: Float!
+  incorrectChars: Float!
 }
 
 type User {
@@ -97,16 +79,11 @@ type User {
   description: String
   avatar: String
   country: String
-  testsCompleted: Int
-  wordsWritten: Int
-  keystrokes: Int
   badge: UserBadge
   authProvider: AuthProvider
   followedBy: [UserOnUser!]
   following: [UserOnUser!]
-  wordsPerMinute: [WordsPerMinute!]
-  charsPerMinute: [CharsPerMinute!]
-  accuracy: [TypingAccuracy!]
+  testPresetHistory: [TestPresetHistory!]
   testPresets: [TestPreset!]
 }
 

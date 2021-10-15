@@ -1,10 +1,8 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseModel } from '../base.model';
-import { CharsPerMinute } from './charsPerMinute.model';
 import { TestPreset } from '../test-preset/test-preset.model';
-import { TypingAccuracy } from './typing-accuracy.model';
 import { UserOnUser } from '../user-on-user/userOnUser.model';
-import { WordsPerMinute } from './wordsPerMinute.model';
+import { TestPresetHistory } from './test-preset-history.model';
 
 export enum UserFilterBy {
   WPM = 'WPM',
@@ -59,15 +57,6 @@ export class User extends BaseModel {
   @Field(() => String, { nullable: true })
   country?: string;
 
-  @Field(() => Int, { nullable: true })
-  testsCompleted?: number;
-
-  @Field(() => Int, { nullable: true })
-  wordsWritten?: number;
-
-  @Field(() => Int, { nullable: true })
-  keystrokes?: number;
-
   @Field(() => UserBadge, { nullable: true })
   badge?: UserBadge;
 
@@ -80,14 +69,8 @@ export class User extends BaseModel {
   @Field(() => [UserOnUser], { nullable: true })
   following?: UserOnUser[];
 
-  @Field(() => [WordsPerMinute], { nullable: true })
-  wordsPerMinute?: WordsPerMinute[];
-
-  @Field(() => [CharsPerMinute], { nullable: true })
-  charsPerMinute?: CharsPerMinute[];
-
-  @Field(() => [TypingAccuracy], { nullable: true })
-  accuracy?: TypingAccuracy[];
+  @Field(() => [TestPresetHistory], { nullable: true })
+  testPresetHistory?: TestPresetHistory[];
 
   @Field(() => [TestPreset], { nullable: true })
   testPresets?: TestPreset[];

@@ -12,12 +12,10 @@ export class AuthService implements AuthenticationProvider {
     const user = await this.prisma.user.findUnique({
       where: { oauthId: details.oauthId ?? '' },
       include: {
-        accuracy: true,
-        charsPerMinute: true,
         followedBy: true,
         following: true,
+        testPresetHistory: true,
         testPresets: true,
-        wordsPerMinute: true,
       },
     });
     if (user) {
@@ -26,12 +24,10 @@ export class AuthService implements AuthenticationProvider {
           oauthId: details.oauthId ?? '',
         },
         include: {
-          accuracy: true,
-          charsPerMinute: true,
           followedBy: true,
           following: true,
+          testPresetHistory: true,
           testPresets: true,
-          wordsPerMinute: true,
         },
         data: details,
       });
@@ -50,12 +46,10 @@ export class AuthService implements AuthenticationProvider {
     return await this.prisma.user.findUnique({
       where: { oauthId: oauthId ?? '' },
       include: {
-        accuracy: true,
-        charsPerMinute: true,
         followedBy: true,
         following: true,
+        testPresetHistory: true,
         testPresets: true,
-        wordsPerMinute: true,
       },
     });
   }

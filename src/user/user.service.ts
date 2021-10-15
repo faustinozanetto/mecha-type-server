@@ -35,11 +35,31 @@ export class UserService {
         ],
       };
     }
+    const user = await this.prisma.user.findUnique({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      where: { id: context.req.session.passport.user.id },
+      include: { testPresetHistory: true },
+    });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const user = context.req.session.passport.user as User;
-    return { user };
+    const parsedUser: User = {
+      ...user,
+      badge:
+        user.badge === 'DEFAULT'
+          ? UserBadge.DEFAULT
+          : user.badge === 'PRO'
+          ? UserBadge.PRO
+          : UserBadge.TESTER,
+      authProvider:
+        user.authProvider === 'DEFAULT'
+          ? AuthProvider.DEFAULT
+          : user.authProvider === 'DISCORD'
+          ? AuthProvider.DISCORD
+          : user.authProvider === 'GITHUB'
+          ? AuthProvider.GITHUB
+          : AuthProvider.GOOGLE,
+    };
+    return { user: parsedUser };
   }
 
   async logout(context: MechaContext): Promise<boolean> {
@@ -69,9 +89,7 @@ export class UserService {
     const user = await this.prisma.user.findUnique({
       where,
       include: {
-        accuracy: true,
-        wordsPerMinute: true,
-        charsPerMinute: true,
+        testPresetHistory: true,
         testPresets: true,
       },
     });
@@ -189,14 +207,16 @@ export class UserService {
             createdAt: 'desc',
           },
           include: {
-            accuracy: true,
+            testPresetHistory: true,
           },
         });
 
         // Mapping for each user
         users.map((user) => {
           // Calculate average accuracy for user.
-          const averageField = calculateAverage(user.accuracy.map((accuracy) => accuracy.amount));
+          const averageField = calculateAverage(
+            user.testPresetHistory.map((entry) => entry.accuracy),
+          );
           // Create entry with name and average.
           filteredUsers.push({
             ...user,
@@ -224,13 +244,13 @@ export class UserService {
             createdAt: 'desc',
           },
           include: {
-            wordsPerMinute: true,
+            testPresetHistory: true,
           },
         });
         // Mapping for each user
         users.map((user) => {
           // Calculate average accuracy for user.
-          const averageField = calculateAverage(user.wordsPerMinute.map((wpm) => wpm.amount));
+          const averageField = calculateAverage(user.testPresetHistory.map((entry) => entry.wpm));
           // Create entry with name and average.
           filteredUsers.push({
             ...user,
@@ -258,13 +278,13 @@ export class UserService {
             createdAt: 'desc',
           },
           include: {
-            charsPerMinute: true,
+            testPresetHistory: true,
           },
         });
         // Mapping for each user
         users.map((user) => {
           // Calculate average accuracy for user.
-          const averageField = calculateAverage(user.charsPerMinute.map((cpm) => cpm.amount));
+          const averageField = calculateAverage(user.testPresetHistory.map((entry) => entry.cpm));
           // Create entry with name and average.
           filteredUsers.push({
             ...user,
@@ -291,11 +311,14 @@ export class UserService {
           orderBy: {
             createdAt: 'desc',
           },
+          include: { testPresetHistory: true },
         });
         // Mapping for each user
         users.map((user) => {
           // Calculate average accuracy for user.
-          const averageField = user.keystrokes;
+          const averageField = calculateAverage(
+            user.testPresetHistory.map((entry) => entry.keystrokes),
+          );
           // Create entry with name and average.
           filteredUsers.push({
             ...user,
@@ -322,11 +345,12 @@ export class UserService {
           orderBy: {
             createdAt: 'desc',
           },
+          include: { testPresetHistory: true },
         });
         // Mapping for each user
         users.map((user) => {
           // Calculate average accuracy for user.
-          const averageField = user.testsCompleted;
+          const averageField = user.testPresetHistory.length;
           // Create entry with name and average.
           filteredUsers.push({
             ...user,
@@ -385,7 +409,6 @@ export class UserService {
     }
 
     // Updating the user
-    // Updating the user
     const updatedUser = await this.prisma.user.update({
       where,
       data: {
@@ -393,17 +416,9 @@ export class UserService {
         description: data.description,
         avatar: data.image,
         country: data.country,
-        keystrokes: data.keystrokes,
-        testsCompleted: data.testsCompleted,
         badge: data.badge,
-        wordsPerMinute: { create: [data.wordsPerMinute] },
-        charsPerMinute: { create: [data.charsPerMinute] },
-        accuracy: { create: [data.accuracy] },
       },
       include: {
-        accuracy: true,
-        wordsPerMinute: true,
-        charsPerMinute: true,
         testPresets: true,
       },
     });

@@ -31,27 +31,22 @@ model Session {
 }
 
 model User {
-  id             String           @id @default(cuid())
-  oauthId        String           @unique
-  username       String           @unique
-  description    String           @default("")
-  avatar         String
-  country        String           @default("")
-  badge          UserBadge        @default(DEFAULT)
-  keystrokes     Int              @default(0)
-  testsCompleted Int              @default(0)
-  wordsWritten   Int              @default(0)
-  followedBy     UserOnUser[]     @relation("followedBy")
-  following      UserOnUser[]     @relation("following")
-  wordsPerMinute WordsPerMinute[]
-  charsPerMinute CharsPerMinute[]
-  accuracy       TypingAccuracy[]
-  testPresets    TestPreset[]
-  accessToken    String
-  refreshToken   String
-  authProvider   AuthProvider     @default(DEFAULT)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id                String              @id @default(cuid())
+  oauthId           String              @unique
+  username          String              @unique
+  description       String              @default("")
+  avatar            String
+  country           String              @default("")
+  badge             UserBadge           @default(DEFAULT)
+  followedBy        UserOnUser[]        @relation("followedBy")
+  following         UserOnUser[]        @relation("following")
+  testPresetHistory TestPresetHistory[]
+  testPresets       TestPreset[]
+  accessToken       String
+  refreshToken      String
+  authProvider      AuthProvider        @default(DEFAULT)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 }
 
 model UserOnUser {
@@ -64,31 +59,20 @@ model UserOnUser {
   updatedAt DateTime @updatedAt
 }
 
-model WordsPerMinute {
-  id        String   @id @default(cuid())
-  amount    Float    @default(0)
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model CharsPerMinute {
-  id        String   @id @default(cuid())
-  amount    Float    @default(0)
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model TypingAccuracy {
-  id        String   @id @default(cuid())
-  amount    Float    @default(0)
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model TestPresetHistory {
+  id             String     @id @default(cuid())
+  user           User       @relation(fields: [userId], references: [id])
+  userId         String
+  testPreset     TestPreset @relation(fields: [testPresetId], references: [id])
+  testPresetId   String
+  wpm            Float      @default(0)
+  cpm            Float      @default(0)
+  accuracy       Float      @default(0)
+  keystrokes     Float      @default(0)
+  correctChars   Float      @default(0)
+  incorrectChars Float      @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 enum TestType {
@@ -102,14 +86,15 @@ enum TestLanguage {
 }
 
 model TestPreset {
-  id           String       @id @default(cuid())
-  type         TestType     @default(WORDS)
-  language     TestLanguage @default(ENGLISH)
-  time         Int          @default(0)
-  words        Int          @default(25)
-  creatorImage String       @default("")
-  user         User?        @relation(fields: [userId], references: [id])
-  userId       String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id                String              @id @default(cuid())
+  type              TestType            @default(WORDS)
+  language          TestLanguage        @default(ENGLISH)
+  time              Int                 @default(0)
+  words             Int                 @default(25)
+  creatorImage      String              @default("")
+  user              User?               @relation(fields: [userId], references: [id])
+  userId            String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  TestPresetHistory TestPresetHistory[]
 }
