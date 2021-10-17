@@ -38,8 +38,8 @@ model User {
   avatar            String
   country           String              @default("")
   badge             UserBadge           @default(DEFAULT)
-  followedBy        UserOnUser[]        @relation("followedBy")
-  following         UserOnUser[]        @relation("following")
+  following         Follow[]            @relation("Following")
+  followers         Follow[]            @relation("Followers")
   testPresetHistory TestPresetHistory[]
   testPresets       TestPreset[]
   accessToken       String
@@ -49,14 +49,17 @@ model User {
   updatedAt         DateTime            @updatedAt
 }
 
-model UserOnUser {
-  id        String   @id @default(cuid())
-  child     User     @relation("following", fields: [childId], references: [id])
-  childId   String
-  parent    User     @relation("followedBy", fields: [parentId], references: [id])
-  parentId  String
+model Follow {
+  id         String  @id @default(cuid())
+  user       User?   @relation("Followers", fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+  follower   User?   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, followerId])
 }
 
 model TestPresetHistory {

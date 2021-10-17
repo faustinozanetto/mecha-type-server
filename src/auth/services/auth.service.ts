@@ -12,7 +12,7 @@ export class AuthService implements AuthenticationProvider {
     const user = await this.prisma.user.findUnique({
       where: { oauthId: details.oauthId ?? '' },
       include: {
-        followedBy: true,
+        followers: true,
         following: true,
         testPresetHistory: true,
         testPresets: true,
@@ -24,7 +24,7 @@ export class AuthService implements AuthenticationProvider {
           oauthId: details.oauthId ?? '',
         },
         include: {
-          followedBy: true,
+          followers: true,
           following: true,
           testPresetHistory: true,
           testPresets: true,
@@ -46,7 +46,7 @@ export class AuthService implements AuthenticationProvider {
     return await this.prisma.user.findUnique({
       where: { oauthId: oauthId ?? '' },
       include: {
-        followedBy: true,
+        followers: true,
         following: true,
         testPresetHistory: true,
         testPresets: true,

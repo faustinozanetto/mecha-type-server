@@ -12,6 +12,7 @@ import { UserWhereInput } from './dto/user-where.input';
 import type { MechaContext } from 'types/types';
 import { UseGuards } from '@nestjs/common';
 import { GraphQLAuthGuard } from 'auth/utils/guards';
+import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -56,12 +57,12 @@ export class UserResolver {
     return this.userService.userFollowers(userId);
   }
 
-  @Query(() => Boolean)
+  @Query(() => FollowsUserResponse)
   async followsUser(
     @Args('userId', { type: () => String }) userId: string,
-    @Args('targetUserId', { type: () => String }) targetUserId: string,
-  ) {
-    return this.userService.followsUser(userId, targetUserId);
+    @Args('followerId', { type: () => String }) followerId: string,
+  ): Promise<FollowsUserResponse> {
+    return this.userService.followsUser(userId, followerId);
   }
 
   @UseGuards(GraphQLAuthGuard)
@@ -77,17 +78,17 @@ export class UserResolver {
   @Mutation(() => FollowUserResponse)
   async followUser(
     @Args('userId', { type: () => String }) userId: string,
-    @Args('targetUserId', { type: () => String }) targetUserId: string,
+    @Args('followerId', { type: () => String }) followerId: string,
   ) {
-    return this.userService.followUser(userId, targetUserId);
+    return this.userService.followUser(userId, followerId);
   }
 
   @UseGuards(GraphQLAuthGuard)
   @Mutation(() => UnfollowUserResponse)
   async unfollowUser(
     @Args('userId', { type: () => String }) userId: string,
-    @Args('targetUserId', { type: () => String }) targetUserId: string,
+    @Args('followerId', { type: () => String }) followerId: string,
   ) {
-    return this.userService.unfollowUser(userId, targetUserId);
+    return this.userService.unfollowUser(userId, followerId);
   }
 }

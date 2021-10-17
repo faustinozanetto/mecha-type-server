@@ -172,6 +172,11 @@ type UnfollowUserResponse {
   errors: [ErrorResponse!]
 }
 
+type FollowsUserResponse {
+  follows: Boolean
+  errors: [ErrorResponse!]
+}
+
 type TestPresetResponse {
   testPreset: TestPreset
   errors: [ErrorResponse!]
@@ -193,7 +198,7 @@ type Query {
   users(take: Int!): UsersResponse!
   filterUsers(filterBy: UserFilterBy!, page: Int!): FilteredUsersResponse!
   userFollowers(userId: String!): UserFollowersResponse!
-  followsUser(targetUserId: String!, userId: String!): Boolean!
+  followsUser(followerId: String!, userId: String!): FollowsUserResponse!
   testPreset(id: String!): TestPresetResponse!
   testPresets(input: TestPresetsFindInput): TestPresetsResponse!
   userTestPresets(userId: String!): TestPresetsResponse!
@@ -232,8 +237,8 @@ input TestPresetWhereInput {
 type Mutation {
   logout: Boolean!
   updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
-  followUser(targetUserId: String!, userId: String!): FollowUserResponse!
-  unfollowUser(targetUserId: String!, userId: String!): UnfollowUserResponse!
+  followUser(followerId: String!, userId: String!): FollowUserResponse!
+  unfollowUser(followerId: String!, userId: String!): UnfollowUserResponse!
   createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!): TestPresetHistoryResponse!

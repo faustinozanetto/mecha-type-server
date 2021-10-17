@@ -14,6 +14,7 @@ import { FollowUserResponse } from 'models/responses/user/follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { MechaContext } from 'types/types';
 import { PrismaService } from 'nestjs-prisma';
+import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
@@ -422,8 +423,6 @@ export class UserService {
       },
     });
 
-    console.log('UPDATED USER: ' + updatedUser);
-
     // If an error ocurred we return error
     if (!updatedUser) {
       return {
@@ -469,22 +468,20 @@ export class UserService {
   async userFollowers(userId: string): Promise<UserFollowersResponse> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { following: true },
+      include: { followers: { include: { user: true, follower: true } } },
     });
     const followers: UserFollower[] = [];
-    for (const entry of user.following) {
-      const follower = await this.prisma.user.findUnique({
-        where: { id: entry.parentId },
-      });
-      if (follower) {
+    for (let i = 0; i < user.followers.length; i++) {
+      const followRelation = user.followers[i];
+      if (followRelation.follower) {
         followers.push({
-          ...follower,
+          ...followRelation.follower,
           authProvider:
-            follower.authProvider === 'DEFAULT'
+            followRelation.follower.authProvider === 'DEFAULT'
               ? AuthProvider.DEFAULT
-              : follower.authProvider === 'DISCORD'
+              : followRelation.follower.authProvider === 'DISCORD'
               ? AuthProvider.DISCORD
-              : follower.authProvider === 'GITHUB'
+              : followRelation.follower.authProvider === 'GITHUB'
               ? AuthProvider.GITHUB
               : AuthProvider.GOOGLE,
         });
@@ -493,8 +490,8 @@ export class UserService {
     return { users: followers };
   }
 
-  async followUser(userId: string, targetUserId: string): Promise<FollowUserResponse> {
-    if (userId === '' || targetUserId === '') {
+  async followUser(userId: string, followerId: string): Promise<FollowUserResponse> {
+    if (userId === '' || followerId === '') {
       return {
         errors: [
           {
@@ -504,47 +501,55 @@ export class UserService {
         ],
       };
     }
-    const exists = await this.prisma.userOnUser.findMany({
-      where: {
-        childId: targetUserId,
-        parentId: userId,
-      },
-    });
-    if (exists[0] && exists[0].id !== undefined) {
-      return { follow: false };
+    try {
+      const followRelation = await this.prisma.follow.create({
+        data: {
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+          follower: {
+            connect: {
+              id: followerId,
+            },
+          },
+        },
+      });
+      return {
+        follow: followRelation.id !== undefined,
+      };
+    } catch (error) {
+      return { errors: [{ field: 'error', message: 'An error occurred' }] };
     }
-    const follow = await this.prisma.userOnUser.create({
-      data: {
-        parent: { connect: { id: userId } },
-        child: { connect: { id: targetUserId } },
-      },
-    });
+  }
+
+  async unfollowUser(userId: string, followerId: string): Promise<UnfollowUserResponse> {
+    try {
+      await this.prisma.follow.delete({
+        where: { userId_followerId: { userId, followerId } },
+      });
+      return { unfollow: true };
+    } catch (error) {
+      return { errors: [{ field: 'error', message: 'An error occurred' }] };
+    }
+  }
+
+  async followsUser(userId: string, followerId: string): Promise<FollowsUserResponse> {
+    try {
+      const follows = await this.prisma.follow.findUnique({
+        where: {
+          userId_followerId: { userId, followerId },
+        },
+      });
+      if (follows && follows.followerId) {
+        return { follows: true };
+      }
+    } catch (error) {
+      return { errors: [{ field: 'error', message: 'An error occurred' }] };
+    }
     return {
-      follow: follow.id !== undefined,
+      follows: false,
     };
-  }
-
-  async unfollowUser(userId: string, targetUserId: string): Promise<UnfollowUserResponse> {
-    await this.prisma.userOnUser.deleteMany({
-      where: {
-        childId: targetUserId,
-        parentId: userId,
-      },
-    });
-    return { unfollow: true };
-  }
-
-  async followsUser(userId: string, targetUserId: string): Promise<boolean> {
-    if (userId === undefined || targetUserId === undefined) return false;
-    const follows = await this.prisma.userOnUser.findFirst({
-      where: {
-        childId: targetUserId,
-        parentId: userId,
-      },
-    });
-    if (follows && follows.id) {
-      return true;
-    }
-    return false;
   }
 }
