@@ -18,6 +18,6 @@ export class TestPresetWhereInput {
   @Field(() => Int, { nullable: true })
   words?: number;
 
-  @Field(() => String, { nullable: true })
-  userId?: string;
+  @Field(() => Boolean, { nullable: true })
+  punctuated?: boolean;
 }

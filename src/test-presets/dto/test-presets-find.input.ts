@@ -3,14 +3,11 @@ import { TestPresetWhereInput } from './test-preset-where.input';
 
 @InputType()
 export class TestPresetsFindInput {
-  @Field(() => Int, { nullable: true })
-  take?: number;
+  @Field(() => Int, { nullable: false })
+  currentPage: number;
 
-  @Field(() => Int, { nullable: true })
-  skip?: number;
-
-  @Field(() => String, { nullable: true })
-  cursor?: string;
+  @Field(() => Int, { nullable: false })
+  pageSize: number;
 
   @Field(() => TestPresetWhereInput, { nullable: true })
   where?: TestPresetWhereInput;

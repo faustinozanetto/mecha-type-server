@@ -50,19 +50,20 @@ export class TestPresetService {
   }
 
   async testPresets(input: TestPresetsFindInput): Promise<TestPresetsResponse> {
+    let paginatedPresets: TestPreset[] = [];
     const presets = await this.prisma.testPreset.findMany({
-      take: input.take,
-      skip: input.skip,
+      take: input.pageSize,
+      skip: input.pageSize * input.currentPage,
       where: {
         id: input.where.id,
         language: input.where.language,
         type: input.where.type,
         words: input.where.words,
         time: input.where.time,
-        userId: input.where.userId,
+        punctuated: input.where.punctuated,
+        userId: null,
       },
     });
-
     const parsedPresets: TestPreset[] = presets.map((preset) => {
       return {
         ...preset,
@@ -70,8 +71,9 @@ export class TestPresetService {
         language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
       };
     });
+    paginatedPresets = parsedPresets;
 
-    return { testPresets: parsedPresets };
+    return { testPresets: paginatedPresets, totalPresets: paginatedPresets.length };
   }
 
   async userTestPresets(userId: string): Promise<TestPresetsResponse> {
@@ -98,6 +100,7 @@ export class TestPresetService {
         language: data.language,
         words: data.words,
         time: data.time,
+        punctuated: data.punctuated,
         creatorImage: 'https://i.imgur.com/xuIzYtW.png',
       },
     });
@@ -117,6 +120,7 @@ export class TestPresetService {
         language: data.language,
         words: data.words,
         time: data.time,
+        punctuated: data.punctuated,
         creatorImage: data.creatorImage,
         user: {
           connect: {

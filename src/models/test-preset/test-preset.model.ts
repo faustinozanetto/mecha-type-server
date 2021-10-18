@@ -35,6 +35,9 @@ export class TestPreset extends BaseModel {
   @Field(() => Int, { nullable: true })
   words?: number;
 
+  @Field(() => Boolean, { nullable: true })
+  punctuated?: boolean;
+
   @Field(() => String, { nullable: true })
   creatorImage?: string;
 

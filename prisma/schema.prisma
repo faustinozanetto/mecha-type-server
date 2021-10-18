@@ -94,10 +94,12 @@ model TestPreset {
   language          TestLanguage        @default(ENGLISH)
   time              Int                 @default(0)
   words             Int                 @default(25)
+  punctuated        Boolean             @default(false)
   creatorImage      String              @default("")
+  testPresetHistory TestPresetHistory[]
   user              User?               @relation(fields: [userId], references: [id])
   userId            String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  TestPresetHistory TestPresetHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

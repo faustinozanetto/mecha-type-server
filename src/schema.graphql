@@ -14,6 +14,7 @@ type TestPreset {
   language: TestLanguage
   time: Int
   words: Int
+  punctuated: Boolean
   creatorImage: String
   userId: String
   creator: User!
@@ -184,6 +185,7 @@ type TestPresetResponse {
 
 type TestPresetsResponse {
   testPresets: [TestPreset!]
+  totalPresets: Int
   errors: [ErrorResponse!]
 }
 
@@ -219,9 +221,8 @@ enum UserFilterBy {
 }
 
 input TestPresetsFindInput {
-  take: Int
-  skip: Int
-  cursor: String
+  currentPage: Int!
+  pageSize: Int!
   where: TestPresetWhereInput
 }
 
@@ -231,7 +232,7 @@ input TestPresetWhereInput {
   language: TestLanguage
   time: Int
   words: Int
-  userId: String
+  punctuated: Boolean
 }
 
 type Mutation {
@@ -296,6 +297,7 @@ input CreateTestPresetInput {
   language: TestLanguage!
   time: Int!
   words: Int!
+  punctuated: Boolean!
 }
 
 input CreateTestPresetHistoryInput {

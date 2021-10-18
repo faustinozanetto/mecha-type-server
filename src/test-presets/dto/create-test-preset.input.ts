@@ -25,4 +25,7 @@ export class CreateTestPresetInput {
   @Field(() => Int)
   @IsNotEmpty()
   words: number;
+
+  @Field(() => Boolean)
+  punctuated?: boolean;
 }
