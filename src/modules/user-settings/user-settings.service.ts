@@ -14,7 +14,19 @@ export class UserSettingsService {
       where: input,
     });
     if (!userSettings) {
-      return { errors: [{ field: 'userSettings', message: 'An error occurred!' }] };
+      const createdSettings = await this.prisma.userSettings.create({
+        data: {
+          user: { connect: { id: input.userId } },
+          blindMode: false,
+          noBackspace: false,
+          pauseOnError: false,
+          typeSounds: false,
+          typeSoundsVolume: 0.0,
+        },
+      });
+      return {
+        userSettings: createdSettings,
+      };
     }
     return { userSettings };
   }
