@@ -1,11 +1,11 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from 'models/user/user.model';
+import { UserSettings } from 'models/user-settings/user-settings.model';
 import { ErrorResponse } from '../error/error.model';
 
 @ObjectType()
 export class UserSettingsResponse {
-  @Field(() => User, { nullable: true })
-  user?: User;
+  @Field(() => UserSettings, { nullable: true })
+  userSettings?: UserSettings;
 
   @Field(() => [ErrorResponse], { nullable: true })
   errors?: ErrorResponse[];

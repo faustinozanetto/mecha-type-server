@@ -206,6 +206,27 @@ type TestPresetHistoryResponse {
   errors: [ErrorResponse!]
 }
 
+type UserSettings {
+  id: String!
+
+  """Identifies the date and time when the object was created."""
+  createdAt: Date!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: Date!
+  userId: String
+  blindMode: Boolean
+  pauseOnError: Boolean
+  noBackspace: Boolean
+  typeSounds: Boolean
+  typeSoundsVolume: Float
+}
+
+type UserSettingsResponse {
+  userSettings: UserSettings
+  errors: [ErrorResponse!]
+}
+
 type Query {
   me: UserResponse!
   user(where: UserWhereInput!): UserResponse!
@@ -213,6 +234,7 @@ type Query {
   filterUsers(filterBy: UserFilterBy!, page: Int!): FilteredUsersResponse!
   userFollowers(userId: String!): UserFollowersResponse!
   followsUser(followerId: String!, userId: String!): FollowsUserResponse!
+  userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
   testPreset(id: String!): TestPresetResponse!
   testPresets(input: TestPresetsFindInput): TestPresetsResponse!
   userTestPresets(userId: String!): TestPresetsResponse!
@@ -230,6 +252,11 @@ enum UserFilterBy {
   ACCURACY
   KEYSTROKES
   TESTSCOMPLETED
+}
+
+input UserSettingsWhereInput {
+  id: String
+  userId: String
 }
 
 input TestPresetsFindInput {
@@ -252,6 +279,8 @@ type Mutation {
   updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
   followUser(followerId: String!, userId: String!): FollowUserResponse!
   unfollowUser(followerId: String!, userId: String!): UnfollowUserResponse!
+  createUserSettings(input: UserSettingsCreateInput!): UserSettingsResponse!
+  updateUserSettings(input: UserSettingsUpdateInput!): UserSettingsResponse!
   createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!): TestPresetHistoryResponse!
@@ -300,6 +329,24 @@ input AccuracyCreateInput {
   amount: Float
   createdAt: Date
   updatedAt: Date
+}
+
+input UserSettingsCreateInput {
+  userId: String
+  blindMode: Boolean
+  pauseOnError: Boolean
+  noBackspace: Boolean
+  typeSounds: Boolean
+  typeSoundsVolume: Float
+}
+
+input UserSettingsUpdateInput {
+  userId: String
+  blindMode: Boolean
+  pauseOnError: Boolean
+  noBackspace: Boolean
+  typeSounds: Boolean
+  typeSoundsVolume: Float
 }
 
 input CreateTestPresetInput {

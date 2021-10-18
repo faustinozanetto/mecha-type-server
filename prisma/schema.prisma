@@ -80,16 +80,18 @@ model TestPresetHistory {
 }
 
 model UserSettings {
-  id               String  @id @default(cuid())
-  user             User    @relation(fields: [userId], references: [id])
+  id               String   @id @default(cuid())
+  user             User     @relation(fields: [userId], references: [id])
   userId           String
-  blindMode        Boolean @default(false)
-  pauseOnError     Boolean @default(false)
-  noBackspace      Boolean @default(false)
-  typeSounds       Boolean @default(false)
-  typeSoundsVolume Float   @default(0.0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  blindMode        Boolean  @default(false)
+  pauseOnError     Boolean  @default(false)
+  noBackspace      Boolean  @default(false)
+  typeSounds       Boolean  @default(false)
+  typeSoundsVolume Float    @default(0.0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([userId])
 }
 
 enum TestType {
