@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthProvider, User, UserBadge, UserFilterBy } from 'models/user/user.model';
-import { UserWhereInput } from 'user/dto/user-where.input';
-import { UserUpdateInput } from 'user/dto/user-update.input';
+import { UserWhereInput } from 'modules/user/dto/user-where.input';
+import { UserUpdateInput } from 'modules/user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
@@ -15,6 +15,7 @@ import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.respon
 import { MechaContext } from 'types/types';
 import { PrismaService } from 'nestjs-prisma';
 import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
+
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}

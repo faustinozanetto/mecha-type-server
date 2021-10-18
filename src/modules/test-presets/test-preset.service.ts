@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { TestPresetResponse } from 'models/responses/test-preset/test-preset-response.model';
-import { TestPresetsResponse } from 'models/responses/test-preset/test-presets-response.model';
+import {
+  Edge,
+  TestPresetsResponse,
+} from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { AuthProvider, UserBadge } from 'models/user/user.model';
 import { PrismaService } from 'nestjs-prisma';
-import { CreateTestPresetInput } from 'test-presets/dto/create-test-preset.input';
-import { TestPresetsFindInput } from 'test-presets/dto/test-presets-find.input';
+import { CreateTestPresetInput } from 'modules/test-presets/dto/create-test-preset.input';
+import { TestPresetsFindInput } from 'modules/test-presets/dto/test-presets-find.input';
 
 @Injectable()
 export class TestPresetService {
@@ -50,23 +53,9 @@ export class TestPresetService {
   }
 
   async testPresets(input: TestPresetsFindInput): Promise<TestPresetsResponse> {
-    let paginatedPresets: TestPreset[] = [];
-    const take = input.pageSize;
-    const skip = input.pageSize * input.currentPage;
-    const totalPresets = await this.prisma.testPreset.count({
-      where: {
-        id: input.where.id,
-        language: input.where.language,
-        type: input.where.type,
-        words: input.where.words,
-        time: input.where.time,
-        punctuated: input.where.punctuated,
-        userId: null,
-      },
-    });
     const presets = await this.prisma.testPreset.findMany({
-      take,
-      skip,
+      take: input.take,
+      skip: input.skip,
       where: {
         id: input.where.id,
         language: input.where.language,
@@ -76,23 +65,60 @@ export class TestPresetService {
         punctuated: input.where.punctuated,
         userId: null,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
-
-    const parsedPresets: TestPreset[] = presets.map((preset) => {
+    if (!presets.length) {
+      /**
+       * this will occur in two (2) scenarios
+       *  a) client error, pageInfo was not respected when making request
+       *  b) there are no posts matching query
+       */
       return {
-        ...preset,
-        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+        count: 0,
+        edges: [],
+        pageInfo: {
+          hasMore: false,
+          startCursor: null,
+          endCursor: null,
+        },
+      };
+    }
+
+    const hasMore = Boolean(
+      await this.prisma.testPreset.count({
+        take: 1,
+        where: {
+          createdAt: { lt: presets[presets.length - 1].createdAt },
+        },
+      }),
+    );
+
+    const edges = presets.map((node) => ({
+      cursor: node.createdAt,
+      node,
+    }));
+
+    const mapped: Edge[] = edges.map((edge) => {
+      return {
+        cursor: edge.cursor,
+        node: {
+          ...edge.node,
+          type: edge.node.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+          language: edge.node.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+        },
       };
     });
-    paginatedPresets = parsedPresets;
 
     return {
-      testPresets: paginatedPresets,
-      totalPresets: totalPresets,
-      totalPages: Math.ceil(totalPresets / take),
-      currentPage: input.currentPage,
-      hasMore: take + skip < totalPresets,
+      count: edges.length,
+      edges: mapped,
+      pageInfo: {
+        hasMore,
+        startCursor: edges[0].cursor,
+        endCursor: edges[edges.length - 1].cursor,
+      },
     };
   }
 
@@ -110,7 +136,11 @@ export class TestPresetService {
       };
       parsedPresets.push(parsedPreset);
     });
-    return { testPresets: parsedPresets };
+    return {
+      count: 0,
+      edges: [],
+      pageInfo: { endCursor: null, startCursor: null, hasMore: false },
+    };
   }
 
   async createTestPreset(data: CreateTestPresetInput): Promise<TestPresetResponse> {

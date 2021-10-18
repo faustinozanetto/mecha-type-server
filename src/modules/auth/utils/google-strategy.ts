@@ -1,7 +1,7 @@
 import { Strategy, Profile } from 'passport-google-oauth20';
 import { PassportStrategy } from '@nestjs/passport';
 import { Inject, Injectable } from '@nestjs/common';
-import { AuthenticationProvider } from 'auth/services/auth';
+import { AuthenticationProvider } from 'modules/auth/services/auth';
 import { UserDetails } from 'types/types';
 import { AuthProvider } from 'models/user/user.model';
 import { __GOOGLE_CALLBACK__ } from 'utils/constants';

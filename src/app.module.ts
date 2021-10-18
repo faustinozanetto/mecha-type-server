@@ -6,12 +6,13 @@ import { PassportModule } from '@nestjs/passport';
 import { DateScalar } from './common/scalars/date.scalar';
 import { __ORIGIN__, __PROD__ } from 'utils/constants';
 import { DiscordModule } from 'discord/discord.module';
-import { AuthModule } from 'auth/auth.module';
-import { UserModule } from 'user/user.module';
-import { TestPresetModule } from 'test-presets/test-preset.module';
+import { AuthModule } from 'modules/auth/auth.module';
+import { UserModule } from 'modules/user/user.module';
+import { TestPresetModule } from 'modules/test-presets/test-preset.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { Module } from '@nestjs/common';
-import { TestPresetHistoryModule } from 'test-preset-history/test-preset-history.module';
+import { TestPresetHistoryModule } from 'modules/test-preset-history/test-preset-history.module';
+import { UserSettingsModule } from 'modules/user-settings/user-settings.module';
 // require('dotenv').config();
 
 @Module({
@@ -39,6 +40,7 @@ import { TestPresetHistoryModule } from 'test-preset-history/test-preset-history
     }),
     DiscordModule,
     UserModule,
+    UserSettingsModule,
     TestPresetModule,
     TestPresetHistoryModule,
   ],

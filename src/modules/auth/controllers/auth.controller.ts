@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { DiscordAuthGuard, GithubAuthGuard } from 'auth/utils/guards';
+import { DiscordAuthGuard, GithubAuthGuard } from 'modules/auth/utils/guards';
 import { __AUTH_REDIRECT__, __URL__ } from 'utils/constants';
 
 @Controller({

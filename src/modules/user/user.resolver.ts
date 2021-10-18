@@ -6,12 +6,12 @@ import { UserFollowersResponse } from 'models/responses/user/user-followers-resp
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
 import { User, UserFilterBy } from 'models/user/user.model';
-import { UserService } from 'user/user.service';
+import { UserService } from 'modules/user/user.service';
 import { UserUpdateInput } from './dto/user-update.input';
 import { UserWhereInput } from './dto/user-where.input';
 import type { MechaContext } from 'types/types';
 import { UseGuards } from '@nestjs/common';
-import { GraphQLAuthGuard } from 'auth/utils/guards';
+import { GraphQLAuthGuard } from 'modules/auth/utils/guards';
 import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
 
 @Resolver(() => User)

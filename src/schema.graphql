@@ -183,12 +183,21 @@ type TestPresetResponse {
   errors: [ErrorResponse!]
 }
 
-type TestPresetsResponse {
-  testPresets: [TestPreset!]
-  totalPresets: Int
-  totalPages: Int
-  currentPage: Int
+type Edge {
+  cursor: Date
+  node: TestPreset
+}
+
+type PageInfo {
+  startCursor: Date
+  endCursor: Date
   hasMore: Boolean
+}
+
+type TestPresetsResponse {
+  count: Int
+  pageInfo: PageInfo
+  edges: [Edge!]
   errors: [ErrorResponse!]
 }
 
@@ -224,11 +233,8 @@ enum UserFilterBy {
 }
 
 input TestPresetsFindInput {
-  """
-  It represents the current page starting from 0, so currentPage = 2, it indeed is page # 3
-  """
-  currentPage: Int!
-  pageSize: Int!
+  skip: Int!
+  take: Int!
   where: TestPresetWhereInput
 }
 

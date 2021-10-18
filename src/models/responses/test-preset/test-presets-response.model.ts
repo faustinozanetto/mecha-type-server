@@ -3,21 +3,36 @@ import { TestPreset } from 'models/test-preset/test-preset.model';
 import { ErrorResponse } from '../error/error.model';
 
 @ObjectType()
-export class TestPresetsResponse {
-  @Field(() => [TestPreset], { nullable: true })
-  testPresets?: TestPreset[];
+export class Edge {
+  @Field(() => Date, { nullable: true })
+  cursor: Date;
 
-  @Field(() => Int, { nullable: true })
-  totalPresets?: number;
+  @Field(() => TestPreset, { nullable: true })
+  node: TestPreset;
+}
 
-  @Field(() => Int, { nullable: true })
-  totalPages?: number;
+@ObjectType()
+export class PageInfo {
+  @Field(() => Date, { nullable: true })
+  startCursor: Date;
 
-  @Field(() => Int, { nullable: true })
-  currentPage?: number;
+  @Field(() => Date, { nullable: true })
+  endCursor: Date;
 
   @Field(() => Boolean, { nullable: true })
-  hasMore?: boolean;
+  hasMore: boolean;
+}
+
+@ObjectType()
+export class TestPresetsResponse {
+  @Field(() => Int, { nullable: true })
+  count: number;
+
+  @Field(() => PageInfo, { nullable: true })
+  pageInfo: PageInfo;
+
+  @Field(() => [Edge], { nullable: true })
+  edges: Edge[];
 
   @Field(() => [ErrorResponse], { nullable: true })
   errors?: ErrorResponse[];

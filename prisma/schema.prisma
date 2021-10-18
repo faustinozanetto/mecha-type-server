@@ -42,6 +42,7 @@ model User {
   followers         Follow[]            @relation("Followers")
   testPresetHistory TestPresetHistory[]
   testPresets       TestPreset[]
+  userSettings      UserSettings[]
   accessToken       String
   refreshToken      String
   authProvider      AuthProvider        @default(DEFAULT)
@@ -76,6 +77,19 @@ model TestPresetHistory {
   incorrectChars Float      @default(0)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+}
+
+model UserSettings {
+  id               String  @id @default(cuid())
+  user             User    @relation(fields: [userId], references: [id])
+  userId           String
+  blindMode        Boolean @default(false)
+  pauseOnError     Boolean @default(false)
+  noBackspace      Boolean @default(false)
+  typeSounds       Boolean @default(false)
+  typeSoundsVolume Float   @default(0.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum TestType {
