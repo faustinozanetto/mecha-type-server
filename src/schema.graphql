@@ -186,6 +186,9 @@ type TestPresetResponse {
 type TestPresetsResponse {
   testPresets: [TestPreset!]
   totalPresets: Int
+  totalPages: Int
+  currentPage: Int
+  hasMore: Boolean
   errors: [ErrorResponse!]
 }
 
@@ -221,6 +224,9 @@ enum UserFilterBy {
 }
 
 input TestPresetsFindInput {
+  """
+  It represents the current page starting from 0, so currentPage = 2, it indeed is page # 3
+  """
   currentPage: Int!
   pageSize: Int!
   where: TestPresetWhereInput

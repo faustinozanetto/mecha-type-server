@@ -51,9 +51,9 @@ export class TestPresetService {
 
   async testPresets(input: TestPresetsFindInput): Promise<TestPresetsResponse> {
     let paginatedPresets: TestPreset[] = [];
-    const presets = await this.prisma.testPreset.findMany({
-      take: input.pageSize,
-      skip: input.pageSize * input.currentPage,
+    const take = input.pageSize;
+    const skip = input.pageSize * input.currentPage;
+    const totalPresets = await this.prisma.testPreset.count({
       where: {
         id: input.where.id,
         language: input.where.language,
@@ -64,6 +64,20 @@ export class TestPresetService {
         userId: null,
       },
     });
+    const presets = await this.prisma.testPreset.findMany({
+      take,
+      skip,
+      where: {
+        id: input.where.id,
+        language: input.where.language,
+        type: input.where.type,
+        words: input.where.words,
+        time: input.where.time,
+        punctuated: input.where.punctuated,
+        userId: null,
+      },
+    });
+
     const parsedPresets: TestPreset[] = presets.map((preset) => {
       return {
         ...preset,
@@ -73,7 +87,13 @@ export class TestPresetService {
     });
     paginatedPresets = parsedPresets;
 
-    return { testPresets: paginatedPresets, totalPresets: paginatedPresets.length };
+    return {
+      testPresets: paginatedPresets,
+      totalPresets: totalPresets,
+      totalPages: Math.ceil(totalPresets / take),
+      currentPage: input.currentPage,
+      hasMore: take + skip < totalPresets,
+    };
   }
 
   async userTestPresets(userId: string): Promise<TestPresetsResponse> {

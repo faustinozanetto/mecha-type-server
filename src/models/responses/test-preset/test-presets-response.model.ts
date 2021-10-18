@@ -10,6 +10,15 @@ export class TestPresetsResponse {
   @Field(() => Int, { nullable: true })
   totalPresets?: number;
 
+  @Field(() => Int, { nullable: true })
+  totalPages?: number;
+
+  @Field(() => Int, { nullable: true })
+  currentPage?: number;
+
+  @Field(() => Boolean, { nullable: true })
+  hasMore?: boolean;
+
   @Field(() => [ErrorResponse], { nullable: true })
   errors?: ErrorResponse[];
 }
