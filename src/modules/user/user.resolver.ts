@@ -13,6 +13,7 @@ import type { MechaContext } from 'types/types';
 import { UseGuards } from '@nestjs/common';
 import { GraphQLAuthGuard } from 'modules/auth/utils/guards';
 import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
+import { UserFollowersFindInput } from './dto/user-followers-find.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -52,9 +53,9 @@ export class UserResolver {
 
   @Query(() => UserFollowersResponse)
   async userFollowers(
-    @Args('userId', { type: () => String }) userId: string,
+    @Args('input', { type: () => UserFollowersFindInput }) input: UserFollowersFindInput,
   ): Promise<UserFollowersResponse> {
-    return this.userService.userFollowers(userId);
+    return this.userService.userFollowers(input);
   }
 
   @Query(() => FollowsUserResponse)

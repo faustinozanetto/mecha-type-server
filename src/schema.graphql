@@ -158,8 +158,21 @@ type UserFollower {
   oauthId: String
 }
 
+type UserFollowerEdge {
+  cursor: Date
+  node: UserFollower
+}
+
+type UserFollowersPageInfo {
+  startCursor: Date
+  endCursor: Date
+  hasMore: Boolean
+}
+
 type UserFollowersResponse {
-  users: [UserFollower!]
+  count: Int
+  pageInfo: UserFollowersPageInfo
+  edges: [UserFollowerEdge!]
   errors: [ErrorResponse!]
 }
 
@@ -183,12 +196,12 @@ type TestPresetResponse {
   errors: [ErrorResponse!]
 }
 
-type Edge {
+type TestPresetsEdge {
   cursor: Date
   node: TestPreset
 }
 
-type PageInfo {
+type TestPresetsPageInfo {
   startCursor: Date
   endCursor: Date
   hasMore: Boolean
@@ -196,8 +209,8 @@ type PageInfo {
 
 type TestPresetsResponse {
   count: Int
-  pageInfo: PageInfo
-  edges: [Edge!]
+  pageInfo: TestPresetsPageInfo
+  edges: [TestPresetsEdge!]
   errors: [ErrorResponse!]
 }
 
@@ -232,7 +245,7 @@ type Query {
   user(where: UserWhereInput!): UserResponse!
   users(take: Int!): UsersResponse!
   filterUsers(filterBy: UserFilterBy!, page: Int!): FilteredUsersResponse!
-  userFollowers(userId: String!): UserFollowersResponse!
+  userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!
   followsUser(followerId: String!, userId: String!): FollowsUserResponse!
   userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
   testPreset(id: String!): TestPresetResponse!
@@ -252,6 +265,12 @@ enum UserFilterBy {
   ACCURACY
   KEYSTROKES
   TESTSCOMPLETED
+}
+
+input UserFollowersFindInput {
+  skip: Int!
+  take: Int!
+  where: UserWhereInput
 }
 
 input UserSettingsWhereInput {

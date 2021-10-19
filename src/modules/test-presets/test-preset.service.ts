@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TestPresetResponse } from 'models/responses/test-preset/test-preset-response.model';
 import {
-  Edge,
+  TestPresetsEdge,
   TestPresetsResponse,
 } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
@@ -100,7 +100,7 @@ export class TestPresetService {
       node,
     }));
 
-    const mapped: Edge[] = edges.map((edge) => {
+    const mapped: TestPresetsEdge[] = edges.map((edge) => {
       return {
         cursor: edge.cursor,
         node: {

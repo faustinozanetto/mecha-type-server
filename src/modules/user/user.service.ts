@@ -8,13 +8,17 @@ import { UsersResponse } from 'models/responses/user/users-response.model';
 import { calculateAverage } from 'utils/helper-functions';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
 import { FilteredUser } from 'models/user/filtered-user';
-import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
+import {
+  UserFollowerEdge,
+  UserFollowersResponse,
+} from 'models/responses/user/user-followers-response.model';
 import { UserFollower } from 'models/user/user-follower.model';
 import { FollowUserResponse } from 'models/responses/user/follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { MechaContext } from 'types/types';
 import { PrismaService } from 'nestjs-prisma';
 import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
+import { UserFollowersFindInput } from './dto/user-followers-find.input';
 
 @Injectable()
 export class UserService {
@@ -466,29 +470,74 @@ export class UserService {
     return { user: parsedUser };
   }
 
-  async userFollowers(userId: string): Promise<UserFollowersResponse> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: { followers: { include: { user: true, follower: true } } },
+  async userFollowers(input: UserFollowersFindInput): Promise<UserFollowersResponse> {
+    // Fetching followers
+    const followers = await this.prisma.follow.findMany({
+      take: input.take,
+      skip: input.skip,
+      where: {
+        user: input.where,
+      },
+      include: { follower: true },
+      orderBy: { createdAt: 'desc' },
     });
-    const followers: UserFollower[] = [];
-    for (let i = 0; i < user.followers.length; i++) {
-      const followRelation = user.followers[i];
-      if (followRelation.follower) {
-        followers.push({
-          ...followRelation.follower,
+    if (!followers.length) {
+      /**
+       * this will occur in two (2) scenarios
+       *  a) client error, pageInfo was not respected when making request
+       *  b) there are no posts matching query
+       */
+      return {
+        count: 0,
+        edges: [],
+        pageInfo: {
+          hasMore: false,
+          startCursor: null,
+          endCursor: null,
+        },
+      };
+    }
+    // Calculating if there are more followers or not.
+    const hasMore = Boolean(
+      await this.prisma.testPreset.count({
+        take: 1,
+        where: {
+          createdAt: { lt: followers[followers.length - 1].createdAt },
+        },
+      }),
+    );
+    // Mapping the edges.
+    const edges = followers.map((node) => ({
+      cursor: node.createdAt,
+      node,
+    }));
+
+    // Mapping and parsing the followers due to miss match of types.
+    const mapped: UserFollowerEdge[] = edges.map((edge) => {
+      return {
+        cursor: edge.cursor,
+        node: {
+          ...edge.node.follower,
           authProvider:
-            followRelation.follower.authProvider === 'DEFAULT'
+            edge.node.follower.authProvider === 'DEFAULT'
               ? AuthProvider.DEFAULT
-              : followRelation.follower.authProvider === 'DISCORD'
+              : edge.node.follower.authProvider === 'DISCORD'
               ? AuthProvider.DISCORD
-              : followRelation.follower.authProvider === 'GITHUB'
+              : edge.node.follower.authProvider === 'GITHUB'
               ? AuthProvider.GITHUB
               : AuthProvider.GOOGLE,
-        });
-      }
-    }
-    return { users: followers };
+        },
+      };
+    });
+    return {
+      count: edges.length,
+      edges: mapped,
+      pageInfo: {
+        hasMore,
+        startCursor: edges[0].cursor,
+        endCursor: edges[edges.length - 1].cursor,
+      },
+    };
   }
 
   async followUser(userId: string, followerId: string): Promise<FollowUserResponse> {

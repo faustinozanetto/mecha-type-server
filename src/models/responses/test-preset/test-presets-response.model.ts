@@ -3,7 +3,7 @@ import { TestPreset } from 'models/test-preset/test-preset.model';
 import { ErrorResponse } from '../error/error.model';
 
 @ObjectType()
-export class Edge {
+export class TestPresetsEdge {
   @Field(() => Date, { nullable: true })
   cursor: Date;
 
@@ -12,7 +12,7 @@ export class Edge {
 }
 
 @ObjectType()
-export class PageInfo {
+export class TestPresetsPageInfo {
   @Field(() => Date, { nullable: true })
   startCursor: Date;
 
@@ -28,11 +28,11 @@ export class TestPresetsResponse {
   @Field(() => Int, { nullable: true })
   count: number;
 
-  @Field(() => PageInfo, { nullable: true })
-  pageInfo: PageInfo;
+  @Field(() => TestPresetsPageInfo, { nullable: true })
+  pageInfo: TestPresetsPageInfo;
 
-  @Field(() => [Edge], { nullable: true })
-  edges: Edge[];
+  @Field(() => [TestPresetsEdge], { nullable: true })
+  edges: TestPresetsEdge[];
 
   @Field(() => [ErrorResponse], { nullable: true })
   errors?: ErrorResponse[];
