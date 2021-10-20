@@ -477,6 +477,13 @@ export class UserService {
 
   async userFollowers(input: UserFollowersFindInput): Promise<UserFollowersResponse> {
     // Fetching followers
+    const totalAcceptedRequests = await this.prisma.follow.count({
+      where: { status: FollowStatus.ACCEPTED, userId: input.where.id },
+    });
+    const totalPendingRequests = await this.prisma.follow.count({
+      where: { status: FollowStatus.PENDING, userId: input.where.id },
+    });
+
     const followers = await this.prisma.follow.findMany({
       take: input.take,
       skip: input.skip,
@@ -494,6 +501,8 @@ export class UserService {
        */
       return {
         count: 0,
+        acceptedRequests: 0,
+        pendingRequests: 0,
         edges: [],
         pageInfo: {
           hasMore: false,
@@ -542,6 +551,8 @@ export class UserService {
     });
     return {
       count: edges.length,
+      acceptedRequests: totalAcceptedRequests,
+      pendingRequests: totalPendingRequests,
       edges: mapped,
       pageInfo: {
         hasMore,

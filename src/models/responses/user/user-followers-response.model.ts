@@ -28,6 +28,12 @@ export class UserFollowersResponse {
   @Field(() => Int, { nullable: true })
   count: number;
 
+  @Field(() => Int, { nullable: true })
+  acceptedRequests: number;
+
+  @Field(() => Int, { nullable: true })
+  pendingRequests: number;
+
   @Field(() => UserFollowersPageInfo, { nullable: true })
   pageInfo: UserFollowersPageInfo;
 

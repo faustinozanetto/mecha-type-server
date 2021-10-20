@@ -185,6 +185,8 @@ type UserFollowersPageInfo {
 
 type UserFollowersResponse {
   count: Int
+  acceptedRequests: Int
+  pendingRequests: Int
   pageInfo: UserFollowersPageInfo
   edges: [UserFollowerEdge!]
   errors: [ErrorResponse!]
