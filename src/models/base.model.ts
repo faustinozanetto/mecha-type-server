@@ -6,10 +6,12 @@ export abstract class BaseModel {
   id: string;
   @Field({
     description: 'Identifies the date and time when the object was created.',
+    nullable: true,
   })
-  createdAt: Date;
+  createdAt?: Date;
   @Field({
     description: 'Identifies the date and time when the object was last updated.',
+    nullable: true,
   })
-  updatedAt: Date;
+  updatedAt?: Date;
 }

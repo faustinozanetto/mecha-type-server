@@ -10,25 +10,39 @@ export class UserSettingsService {
   constructor(private prisma: PrismaService) {}
 
   async userSettings(input: UserSettingsWhereInput): Promise<UserSettingsResponse> {
-    const userSettings = await this.prisma.userSettings.findUnique({
-      where: input,
-    });
-    if (!userSettings) {
-      const createdSettings = await this.prisma.userSettings.create({
-        data: {
-          user: { connect: { id: input.userId } },
+    try {
+      const userSettings = await this.prisma.userSettings.findUnique({
+        where: input,
+      });
+      if (!userSettings) {
+        const createdSettings = await this.prisma.userSettings.create({
+          data: {
+            user: { connect: { id: input.userId } },
+            blindMode: false,
+            noBackspace: false,
+            pauseOnError: false,
+            typeSounds: false,
+            typeSoundsVolume: 0.0,
+          },
+        });
+        return {
+          userSettings: createdSettings,
+        };
+      }
+      return { userSettings };
+    } catch (e) {
+      return {
+        userSettings: {
+          id: '0',
           blindMode: false,
           noBackspace: false,
           pauseOnError: false,
           typeSounds: false,
+          userId: '',
           typeSoundsVolume: 0.0,
         },
-      });
-      return {
-        userSettings: createdSettings,
       };
     }
-    return { userSettings };
   }
 
   async createUserSettings(input: UserSettingsCreateInput): Promise<UserSettingsResponse> {

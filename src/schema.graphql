@@ -6,10 +6,10 @@ type TestPreset {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   type: TestType
   language: TestLanguage
   time: Int
@@ -39,10 +39,10 @@ type UserOnUser {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   child: User
   childId: String
   parent: User
@@ -53,10 +53,10 @@ type TestPresetHistory {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   userId: String!
   testPresetId: String!
   wpm: Float!
@@ -71,10 +71,10 @@ type User {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   username: String
   oauthId: String
   description: String
@@ -122,10 +122,10 @@ type FilteredUser {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   username: String!
   avatar: String!
   authProvider: AuthProvider
@@ -161,10 +161,10 @@ type UserFollower {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   username: String!
   avatar: String!
   authProvider: AuthProvider
@@ -244,10 +244,10 @@ type UserSettings {
   id: String!
 
   """Identifies the date and time when the object was created."""
-  createdAt: Date!
+  createdAt: Date
 
   """Identifies the date and time when the object was last updated."""
-  updatedAt: Date!
+  updatedAt: Date
   userId: String
   blindMode: Boolean
   pauseOnError: Boolean
