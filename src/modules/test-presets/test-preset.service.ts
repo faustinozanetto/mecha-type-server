@@ -10,6 +10,7 @@ import { AuthProvider, UserBadge } from 'models/user/user.model';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTestPresetInput } from 'modules/test-presets/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'modules/test-presets/dto/test-presets-find.input';
+import { CopyPresetToUserInput } from './dto/copy-preset-to-user.input';
 
 @Injectable()
 export class TestPresetService {
@@ -141,6 +142,51 @@ export class TestPresetService {
       edges: [],
       pageInfo: { endCursor: null, startCursor: null, hasMore: false },
     };
+  }
+
+  async copyPresetToUser(input: CopyPresetToUserInput): Promise<TestPresetResponse> {
+    try {
+      const presetToCopy = await this.prisma.testPreset.findUnique({
+        where: { id: input.presetId },
+      });
+      if (presetToCopy) {
+        const newPreset = await this.prisma.testPreset.create({
+          data: {
+            punctuated: presetToCopy.punctuated,
+            words: presetToCopy.words,
+            time: presetToCopy.time,
+
+            user: { connect: { ...input.user } },
+          },
+        });
+        const parsedPreset = {
+          ...newPreset,
+          type: newPreset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+          language: newPreset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+        };
+        return {
+          testPreset: parsedPreset,
+        };
+      } else {
+        return {
+          errors: [
+            {
+              field: 'preset',
+              message: 'Unable to find preset with the given id',
+            },
+          ],
+        };
+      }
+    } catch (e) {
+      return {
+        errors: [
+          {
+            field: 'unknown',
+            message: 'An error occurred',
+          },
+        ],
+      };
+    }
   }
 
   async createTestPreset(data: CreateTestPresetInput): Promise<TestPresetResponse> {

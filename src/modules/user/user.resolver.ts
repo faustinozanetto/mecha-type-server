@@ -16,6 +16,7 @@ import { FollowUserStatusResponse } from 'models/responses/user/follow-user-stat
 import { UserFollowersFindInput } from './dto/user-followers-find.input';
 import { AcceptFollowRequestResponse } from 'models/responses/user/accept-follow-user.response';
 import { DenyFollowRequestResponse } from 'models/responses/user/deny-follow-user.response';
+import { FilterUsersInput } from './dto/filter-users.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -47,10 +48,9 @@ export class UserResolver {
 
   @Query(() => FilteredUsersResponse)
   async filterUsers(
-    @Args('page', { type: () => Int }) page: number,
-    @Args('filterBy', { type: () => UserFilterBy }) filterBy: UserFilterBy,
+    @Args('input', { type: () => FilterUsersInput }) input: FilterUsersInput,
   ): Promise<FilteredUsersResponse> {
-    return await this.userService.filterUsers(page, filterBy);
+    return await this.userService.filterUsers(input);
   }
 
   @Query(() => UserFollowersResponse)

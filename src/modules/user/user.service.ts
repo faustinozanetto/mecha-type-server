@@ -6,7 +6,10 @@ import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-pres
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
 import { calculateAverage } from 'utils/helper-functions';
-import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
+import {
+  FilteredUsersEdge,
+  FilteredUsersResponse,
+} from 'models/responses/user/filtered-users-response.modal';
 import { FilteredUser } from 'models/user/filtered-user';
 import {
   UserFollowerEdge,
@@ -24,6 +27,7 @@ import { UserFollowersFindInput } from './dto/user-followers-find.input';
 import { FollowStatus } from '.prisma/client';
 import { AcceptFollowRequestResponse } from 'models/responses/user/accept-follow-user.response';
 import { DenyFollowRequestResponse } from 'models/responses/user/deny-follow-user.response';
+import { FilterUsersInput } from './dto/filter-users.input';
 
 @Injectable()
 export class UserService {
@@ -193,216 +197,77 @@ export class UserService {
     };
   }
 
-  async filterUsers(page: number, filterBy: UserFilterBy): Promise<FilteredUsersResponse> {
-    if (page < 0) {
+  async filterUsers(input: FilterUsersInput): Promise<FilteredUsersResponse> {
+    const users = await this.prisma.user.findMany({
+      take: input.take,
+      skip: input.skip,
+      where: {},
+      orderBy: { createdAt: 'desc' },
+      include: { testPresetHistory: true },
+    });
+    if (!users.length) {
+      /**
+       * this will occur in two (2) scenarios
+       *  a) client error, pageInfo was not respected when making request
+       *  b) there are no posts matching query
+       */
       return {
-        errors: [
-          {
-            field: 'page',
-            message: 'Invalid page parameter',
-          },
-        ],
+        count: 0,
+        edges: [],
+        pageInfo: {
+          hasMore: false,
+          startCursor: null,
+          endCursor: null,
+        },
       };
     }
-    const PAGE_SIZE = 10;
-    const filteredUsers: FilteredUser[] = [];
-
-    switch (filterBy) {
-      case UserFilterBy.ACCURACY: {
-        const users = await this.prisma.user.findMany({
-          skip: page * PAGE_SIZE,
-          take: PAGE_SIZE,
-          where: {},
-          orderBy: {
-            createdAt: 'desc',
-          },
-          include: {
-            testPresetHistory: true,
-          },
-        });
-
-        // Mapping for each user
-        users.map((user) => {
-          // Calculate average accuracy for user.
-          const averageField = calculateAverage(
-            user.testPresetHistory.map((entry) => entry.accuracy),
-          );
-          // Create entry with name and average.
-          filteredUsers.push({
-            ...user,
-            value: averageField,
-            authProvider:
-              user.authProvider === 'DEFAULT'
-                ? AuthProvider.DEFAULT
-                : user.authProvider === 'DISCORD'
-                ? AuthProvider.DISCORD
-                : user.authProvider === 'GITHUB'
-                ? AuthProvider.GITHUB
-                : AuthProvider.GOOGLE,
-          });
-        });
-        // Sorting
-        filteredUsers.sort((a, b) => b.value - a.value);
-        break;
-      }
-      case UserFilterBy.WPM: {
-        const users = await this.prisma.user.findMany({
-          skip: page * PAGE_SIZE,
-          take: PAGE_SIZE,
-          where: {},
-          orderBy: {
-            createdAt: 'desc',
-          },
-          include: {
-            testPresetHistory: true,
-          },
-        });
-        // Mapping for each user
-        users.map((user) => {
-          // Calculate average accuracy for user.
-          const averageField = calculateAverage(user.testPresetHistory.map((entry) => entry.wpm));
-          // Create entry with name and average.
-          filteredUsers.push({
-            ...user,
-            value: averageField,
-            authProvider:
-              user.authProvider === 'DEFAULT'
-                ? AuthProvider.DEFAULT
-                : user.authProvider === 'DISCORD'
-                ? AuthProvider.DISCORD
-                : user.authProvider === 'GITHUB'
-                ? AuthProvider.GITHUB
-                : AuthProvider.GOOGLE,
-          });
-        });
-        // Sorting
-        filteredUsers.sort((a, b) => b.value - a.value);
-        break;
-      }
-      case UserFilterBy.CPM: {
-        const users = await this.prisma.user.findMany({
-          skip: page * PAGE_SIZE,
-          take: PAGE_SIZE,
-          where: {},
-          orderBy: {
-            createdAt: 'desc',
-          },
-          include: {
-            testPresetHistory: true,
-          },
-        });
-        // Mapping for each user
-        users.map((user) => {
-          // Calculate average accuracy for user.
-          const averageField = calculateAverage(user.testPresetHistory.map((entry) => entry.cpm));
-          // Create entry with name and average.
-          filteredUsers.push({
-            ...user,
-            value: averageField,
-            authProvider:
-              user.authProvider === 'DEFAULT'
-                ? AuthProvider.DEFAULT
-                : user.authProvider === 'DISCORD'
-                ? AuthProvider.DISCORD
-                : user.authProvider === 'GITHUB'
-                ? AuthProvider.GITHUB
-                : AuthProvider.GOOGLE,
-          });
-        });
-        // Sorting
-        filteredUsers.sort((a, b) => b.value - a.value);
-        break;
-      }
-      case UserFilterBy.KEYSTROKES: {
-        const users = await this.prisma.user.findMany({
-          skip: page * PAGE_SIZE,
-          take: PAGE_SIZE,
-          where: {},
-          orderBy: {
-            createdAt: 'desc',
-          },
-          include: { testPresetHistory: true },
-        });
-        // Mapping for each user
-        users.map((user) => {
-          // Calculate average accuracy for user.
-          const averageField = calculateAverage(
-            user.testPresetHistory.map((entry) => entry.keystrokes),
-          );
-          // Create entry with name and average.
-          filteredUsers.push({
-            ...user,
-            value: averageField,
-            authProvider:
-              user.authProvider === 'DEFAULT'
-                ? AuthProvider.DEFAULT
-                : user.authProvider === 'DISCORD'
-                ? AuthProvider.DISCORD
-                : user.authProvider === 'GITHUB'
-                ? AuthProvider.GITHUB
-                : AuthProvider.GOOGLE,
-          });
-        });
-        // Sorting
-        filteredUsers.sort((a, b) => b.value - a.value);
-        break;
-      }
-      case UserFilterBy.TESTSCOMPLETED: {
-        const users = await this.prisma.user.findMany({
-          skip: page * PAGE_SIZE,
-          take: PAGE_SIZE,
-          where: {},
-          orderBy: {
-            createdAt: 'desc',
-          },
-          include: { testPresetHistory: true },
-        });
-        // Mapping for each user
-        users.map((user) => {
-          // Calculate average accuracy for user.
-          const averageField = user.testPresetHistory.length;
-          // Create entry with name and average.
-          filteredUsers.push({
-            ...user,
-            value: averageField,
-            authProvider:
-              user.authProvider === 'DEFAULT'
-                ? AuthProvider.DEFAULT
-                : user.authProvider === 'DISCORD'
-                ? AuthProvider.DISCORD
-                : user.authProvider === 'GITHUB'
-                ? AuthProvider.GITHUB
-                : AuthProvider.GOOGLE,
-          });
-        });
-        // Sorting
-        filteredUsers.sort((a, b) => b.value - a.value);
-        break;
-      }
-    }
-
-    if (!filteredUsers) {
+    // Calculating if there are more followers or not.
+    const hasMore = Boolean(
+      await this.prisma.user.count({
+        take: 1,
+        where: {
+          createdAt: { lt: users[users.length - 1].createdAt },
+        },
+      }),
+    );
+    // Mapping the edges.
+    const edges = users.map((node) => ({
+      cursor: node.createdAt,
+      node,
+    }));
+    // Mapping and parsing the followers due to miss match of types.
+    const mapped: FilteredUsersEdge[] = edges.map((edge) => {
       return {
-        errors: [
-          {
-            field: 'filteredUsers',
-            message: 'An error occurred while trying to fetch users.',
-          },
-        ],
+        cursor: edge.cursor,
+        node: {
+          ...edge.node,
+          value: 0,
+          badge:
+            edge.node.badge === 'DEFAULT'
+              ? UserBadge.DEFAULT
+              : edge.node.badge === 'PRO'
+              ? UserBadge.PRO
+              : UserBadge.TESTER,
+          authProvider:
+            edge.node.authProvider === 'DEFAULT'
+              ? AuthProvider.DEFAULT
+              : edge.node.authProvider === 'DISCORD'
+              ? AuthProvider.DISCORD
+              : edge.node.authProvider === 'GITHUB'
+              ? AuthProvider.GITHUB
+              : AuthProvider.GOOGLE,
+        },
       };
-    }
-    const nodeCount = filteredUsers.length;
-    const pageCount = Math.ceil(nodeCount / PAGE_SIZE);
-    const currentPage = (page * PAGE_SIZE) / PAGE_SIZE;
-    const hasMore = currentPage !== pageCount;
+    });
 
     return {
-      nodes: filteredUsers,
-      nodeCount,
-      pageCount,
-      currentPage,
-      hasMore,
-      nodesPerPage: PAGE_SIZE,
+      count: edges.length,
+      edges: mapped,
+      pageInfo: {
+        hasMore,
+        startCursor: edges[0].cursor,
+        endCursor: edges[edges.length - 1].cursor,
+      },
     };
   }
 

@@ -126,21 +126,35 @@ type FilteredUser {
 
   """Identifies the date and time when the object was last updated."""
   updatedAt: Date
-  username: String!
-  avatar: String!
-  authProvider: AuthProvider
+  username: String
   oauthId: String
-  country: String!
+  description: String
+  avatar: String
+  country: String
+  badge: UserBadge
+  authProvider: AuthProvider
+  followedBy: [UserOnUser!]
+  following: [UserOnUser!]
+  testPresetHistory: [TestPresetHistory!]
+  testPresets: [TestPreset!]
   value: Float!
 }
 
-type FilteredUsersResponse {
-  nodes: [FilteredUser!]
-  nodeCount: Int
-  pageCount: Int
-  currentPage: Int
-  nodesPerPage: Int
+type FilteredUsersEdge {
+  cursor: Date
+  node: FilteredUser
+}
+
+type FilteredUsersPageInfo {
+  startCursor: Date
+  endCursor: Date
   hasMore: Boolean
+}
+
+type FilteredUsersResponse {
+  count: Int
+  pageInfo: FilteredUsersPageInfo
+  edges: [FilteredUsersEdge!]
   errors: [ErrorResponse!]
 }
 
@@ -265,7 +279,7 @@ type Query {
   me: UserResponse!
   user(where: UserWhereInput!): UserResponse!
   users(take: Int!): UsersResponse!
-  filterUsers(filterBy: UserFilterBy!, page: Int!): FilteredUsersResponse!
+  filterUsers(input: FilterUsersInput!): FilteredUsersResponse!
   userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!
   followUserStatus(followerId: String!, userId: String!): FollowUserStatusResponse!
   userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
@@ -277,6 +291,13 @@ type Query {
 input UserWhereInput {
   id: String
   username: String
+}
+
+input FilterUsersInput {
+  skip: Int!
+  take: Int!
+  filterBy: UserFilterBy!
+  where: UserWhereInput
 }
 
 """Fields to filter Users By"""
@@ -323,6 +344,7 @@ type Mutation {
   unfollowUser(followerId: String!, userId: String!): UnfollowUserResponse!
   createUserSettings(input: UserSettingsCreateInput!): UserSettingsResponse!
   updateUserSettings(input: UserSettingsUpdateInput!): UserSettingsResponse!
+  copyPresetToUser(input: CopyPresetToUserInput!): TestPresetResponse!
   createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
   createTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!): TestPresetHistoryResponse!
@@ -389,6 +411,11 @@ input UserSettingsUpdateInput {
   noBackspace: Boolean
   typeSounds: Boolean
   typeSoundsVolume: Float
+}
+
+input CopyPresetToUserInput {
+  presetId: String!
+  user: UserWhereInput!
 }
 
 input CreateTestPresetInput {

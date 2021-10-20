@@ -1,26 +1,39 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { FilteredUser } from 'models/user/filtered-user';
+import { User } from 'models/user/user.model';
 import { ErrorResponse } from '../error/error.model';
 
 @ObjectType()
-export class FilteredUsersResponse {
-  @Field(() => [FilteredUser], { nullable: true })
-  nodes?: FilteredUser[];
+export class FilteredUsersEdge {
+  @Field(() => Date, { nullable: true })
+  cursor: Date;
 
-  @Field(() => Int, { nullable: true })
-  nodeCount?: number;
+  @Field(() => FilteredUser, { nullable: true })
+  node: FilteredUser;
+}
 
-  @Field(() => Int, { nullable: true })
-  pageCount?: number;
+@ObjectType()
+export class FilteredUsersPageInfo {
+  @Field(() => Date, { nullable: true })
+  startCursor: Date;
 
-  @Field(() => Int, { nullable: true })
-  currentPage?: number;
-
-  @Field(() => Int, { nullable: true })
-  nodesPerPage?: number;
+  @Field(() => Date, { nullable: true })
+  endCursor: Date;
 
   @Field(() => Boolean, { nullable: true })
-  hasMore?: boolean;
+  hasMore: boolean;
+}
+
+@ObjectType()
+export class FilteredUsersResponse {
+  @Field(() => Int, { nullable: true })
+  count: number;
+
+  @Field(() => FilteredUsersPageInfo, { nullable: true })
+  pageInfo: FilteredUsersPageInfo;
+
+  @Field(() => [FilteredUsersEdge], { nullable: true })
+  edges: FilteredUsersEdge[];
 
   @Field(() => [ErrorResponse], { nullable: true })
   errors?: ErrorResponse[];
