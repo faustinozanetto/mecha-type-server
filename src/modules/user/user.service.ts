@@ -603,11 +603,10 @@ export class UserService {
 
   async denyFollowRequest(userId: string, followerId: string): Promise<DenyFollowRequestResponse> {
     try {
-      const petition = await this.prisma.follow.update({
+      await this.prisma.follow.delete({
         where: { userId_followerId: { userId, followerId } },
-        data: { status: FollowStatus.REJECTED },
       });
-      return { denied: petition.status === FollowStatus.REJECTED };
+      return { denied: true };
     } catch (error) {
       return { errors: [{ field: 'error', message: 'An error occurred' }] };
     }
