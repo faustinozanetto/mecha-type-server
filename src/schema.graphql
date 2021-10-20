@@ -144,6 +144,19 @@ type FilteredUsersResponse {
   errors: [ErrorResponse!]
 }
 
+type FollowUserStatusResponse {
+  status: FollowStatus
+  errors: [ErrorResponse!]
+}
+
+"""Status of the follow request"""
+enum FollowStatus {
+  NOTSENT
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 type UserFollower {
   id: String!
 
@@ -156,6 +169,7 @@ type UserFollower {
   avatar: String!
   authProvider: AuthProvider
   oauthId: String
+  status: FollowStatus
 }
 
 type UserFollowerEdge {
@@ -176,8 +190,8 @@ type UserFollowersResponse {
   errors: [ErrorResponse!]
 }
 
-type FollowUserResponse {
-  follow: Boolean
+type RequestFollowUserResponse {
+  requestSent: Boolean
   errors: [ErrorResponse!]
 }
 
@@ -186,8 +200,13 @@ type UnfollowUserResponse {
   errors: [ErrorResponse!]
 }
 
-type FollowsUserResponse {
-  follows: Boolean
+type AcceptFollowRequestResponse {
+  accepted: Boolean
+  errors: [ErrorResponse!]
+}
+
+type DenyFollowRequestResponse {
+  denied: Boolean
   errors: [ErrorResponse!]
 }
 
@@ -246,7 +265,7 @@ type Query {
   users(take: Int!): UsersResponse!
   filterUsers(filterBy: UserFilterBy!, page: Int!): FilteredUsersResponse!
   userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!
-  followsUser(followerId: String!, userId: String!): FollowsUserResponse!
+  followUserStatus(followerId: String!, userId: String!): FollowUserStatusResponse!
   userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
   testPreset(id: String!): TestPresetResponse!
   testPresets(input: TestPresetsFindInput): TestPresetsResponse!
@@ -296,7 +315,9 @@ input TestPresetWhereInput {
 type Mutation {
   logout: Boolean!
   updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
-  followUser(followerId: String!, userId: String!): FollowUserResponse!
+  requestFollowUser(followerId: String!, userId: String!): RequestFollowUserResponse!
+  acceptFollowRequest(followerId: String!, userId: String!): AcceptFollowRequestResponse!
+  denyFollowRequest(followerId: String!, userId: String!): DenyFollowRequestResponse!
   unfollowUser(followerId: String!, userId: String!): UnfollowUserResponse!
   createUserSettings(input: UserSettingsCreateInput!): UserSettingsResponse!
   updateUserSettings(input: UserSettingsUpdateInput!): UserSettingsResponse!

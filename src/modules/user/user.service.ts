@@ -12,13 +12,18 @@ import {
   UserFollowerEdge,
   UserFollowersResponse,
 } from 'models/responses/user/user-followers-response.model';
-import { UserFollower } from 'models/user/user-follower.model';
-import { FollowUserResponse } from 'models/responses/user/follow-user.response';
+import { RequestFollowUserResponse } from 'models/responses/user/request-follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { MechaContext } from 'types/types';
 import { PrismaService } from 'nestjs-prisma';
-import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
+import {
+  FollowRequestStatus,
+  FollowUserStatusResponse,
+} from 'models/responses/user/follow-user-status.response';
 import { UserFollowersFindInput } from './dto/user-followers-find.input';
+import { FollowStatus } from '.prisma/client';
+import { AcceptFollowRequestResponse } from 'models/responses/user/accept-follow-user.response';
+import { DenyFollowRequestResponse } from 'models/responses/user/deny-follow-user.response';
 
 @Injectable()
 export class UserService {
@@ -499,7 +504,7 @@ export class UserService {
     }
     // Calculating if there are more followers or not.
     const hasMore = Boolean(
-      await this.prisma.testPreset.count({
+      await this.prisma.follow.count({
         take: 1,
         where: {
           createdAt: { lt: followers[followers.length - 1].createdAt },
@@ -518,6 +523,12 @@ export class UserService {
         cursor: edge.cursor,
         node: {
           ...edge.node.follower,
+          status:
+            edge.node.status === FollowStatus.ACCEPTED
+              ? FollowRequestStatus.ACCEPTED
+              : edge.node.status === FollowStatus.PENDING
+              ? FollowRequestStatus.PENDING
+              : FollowRequestStatus.REJECTED,
           authProvider:
             edge.node.follower.authProvider === 'DEFAULT'
               ? AuthProvider.DEFAULT
@@ -540,7 +551,7 @@ export class UserService {
     };
   }
 
-  async followUser(userId: string, followerId: string): Promise<FollowUserResponse> {
+  async requestFollowUser(userId: string, followerId: string): Promise<RequestFollowUserResponse> {
     if (userId === '' || followerId === '') {
       return {
         errors: [
@@ -554,6 +565,7 @@ export class UserService {
     try {
       const followRelation = await this.prisma.follow.create({
         data: {
+          status: FollowStatus.PENDING,
           user: {
             connect: {
               id: userId,
@@ -567,8 +579,35 @@ export class UserService {
         },
       });
       return {
-        follow: followRelation.id !== undefined,
+        requestSent: followRelation.id !== undefined,
       };
+    } catch (error) {
+      return { errors: [{ field: 'error', message: 'An error occurred' }] };
+    }
+  }
+
+  async acceptFollowRequest(
+    userId: string,
+    followerId: string,
+  ): Promise<AcceptFollowRequestResponse> {
+    try {
+      const petition = await this.prisma.follow.update({
+        where: { userId_followerId: { userId, followerId } },
+        data: { status: FollowStatus.ACCEPTED },
+      });
+      return { accepted: petition.status === FollowStatus.ACCEPTED };
+    } catch (error) {
+      return { errors: [{ field: 'error', message: 'An error occurred' }] };
+    }
+  }
+
+  async denyFollowRequest(userId: string, followerId: string): Promise<DenyFollowRequestResponse> {
+    try {
+      const petition = await this.prisma.follow.update({
+        where: { userId_followerId: { userId, followerId } },
+        data: { status: FollowStatus.REJECTED },
+      });
+      return { denied: petition.status === FollowStatus.REJECTED };
     } catch (error) {
       return { errors: [{ field: 'error', message: 'An error occurred' }] };
     }
@@ -585,7 +624,7 @@ export class UserService {
     }
   }
 
-  async followsUser(userId: string, followerId: string): Promise<FollowsUserResponse> {
+  async followUserStatus(userId: string, followerId: string): Promise<FollowUserStatusResponse> {
     try {
       const follows = await this.prisma.follow.findUnique({
         where: {
@@ -593,13 +632,20 @@ export class UserService {
         },
       });
       if (follows && follows.followerId) {
-        return { follows: true };
+        return {
+          status:
+            follows.status === FollowStatus.ACCEPTED
+              ? FollowRequestStatus.ACCEPTED
+              : follows.status === FollowStatus.PENDING
+              ? FollowRequestStatus.PENDING
+              : FollowRequestStatus.REJECTED,
+        };
       }
     } catch (error) {
       return { errors: [{ field: 'error', message: 'An error occurred' }] };
     }
     return {
-      follows: false,
+      status: FollowRequestStatus.NOTSENT,
     };
   }
 }

@@ -1,6 +1,6 @@
 import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
-import { FollowUserResponse } from 'models/responses/user/follow-user.response';
+import { RequestFollowUserResponse } from 'models/responses/user/request-follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
@@ -12,8 +12,10 @@ import { UserWhereInput } from './dto/user-where.input';
 import type { MechaContext } from 'types/types';
 import { UseGuards } from '@nestjs/common';
 import { GraphQLAuthGuard } from 'modules/auth/utils/guards';
-import { FollowsUserResponse } from 'models/responses/user/follows-user.response';
+import { FollowUserStatusResponse } from 'models/responses/user/follow-user-status.response';
 import { UserFollowersFindInput } from './dto/user-followers-find.input';
+import { AcceptFollowRequestResponse } from 'models/responses/user/accept-follow-user.response';
+import { DenyFollowRequestResponse } from 'models/responses/user/deny-follow-user.response';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -58,12 +60,12 @@ export class UserResolver {
     return this.userService.userFollowers(input);
   }
 
-  @Query(() => FollowsUserResponse)
-  async followsUser(
+  @Query(() => FollowUserStatusResponse)
+  async followUserStatus(
     @Args('userId', { type: () => String }) userId: string,
     @Args('followerId', { type: () => String }) followerId: string,
-  ): Promise<FollowsUserResponse> {
-    return this.userService.followsUser(userId, followerId);
+  ): Promise<FollowUserStatusResponse> {
+    return this.userService.followUserStatus(userId, followerId);
   }
 
   @UseGuards(GraphQLAuthGuard)
@@ -76,12 +78,30 @@ export class UserResolver {
   }
 
   @UseGuards(GraphQLAuthGuard)
-  @Mutation(() => FollowUserResponse)
-  async followUser(
+  @Mutation(() => RequestFollowUserResponse)
+  async requestFollowUser(
     @Args('userId', { type: () => String }) userId: string,
     @Args('followerId', { type: () => String }) followerId: string,
-  ) {
-    return this.userService.followUser(userId, followerId);
+  ): Promise<RequestFollowUserResponse> {
+    return this.userService.requestFollowUser(userId, followerId);
+  }
+
+  @UseGuards(GraphQLAuthGuard)
+  @Mutation(() => AcceptFollowRequestResponse)
+  async acceptFollowRequest(
+    @Args('userId', { type: () => String }) userId: string,
+    @Args('followerId', { type: () => String }) followerId: string,
+  ): Promise<AcceptFollowRequestResponse> {
+    return this.userService.acceptFollowRequest(userId, followerId);
+  }
+
+  @UseGuards(GraphQLAuthGuard)
+  @Mutation(() => DenyFollowRequestResponse)
+  async denyFollowRequest(
+    @Args('userId', { type: () => String }) userId: string,
+    @Args('followerId', { type: () => String }) followerId: string,
+  ): Promise<DenyFollowRequestResponse> {
+    return this.userService.denyFollowRequest(userId, followerId);
   }
 
   @UseGuards(GraphQLAuthGuard)

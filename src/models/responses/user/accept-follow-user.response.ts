@@ -2,9 +2,9 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { ErrorResponse } from '../error/error.model';
 
 @ObjectType()
-export class FollowUserResponse {
+export class AcceptFollowRequestResponse {
   @Field(() => Boolean, { nullable: true })
-  follow?: boolean;
+  accepted?: boolean;
 
   @Field(() => [ErrorResponse], { nullable: true })
   errors?: ErrorResponse[];
