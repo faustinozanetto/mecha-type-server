@@ -77,17 +77,12 @@ export class UserService {
   }
 
   async logout(context: MechaContext): Promise<boolean> {
-    return new Promise((resolve) =>
-      context.req.session.destroy((err) => {
-        context.res.clearCookie('connect.sid');
-        if (err) {
-          console.log(err);
-          resolve(false);
-          return;
-        }
-        resolve(true);
-      }),
-    );
+    try {
+      context.req.logout();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
