@@ -53,11 +53,18 @@ export class UserService {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       where: { id: context.req.session.passport.user.id },
-      include: { testPresetHistory: true },
+      include: { testPresetHistory: true, testPresets: true },
     });
-
+    const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
+      return {
+        ...preset,
+        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+      };
+    });
     const parsedUser: User = {
       ...user,
+      testPresets: parsedPresets,
       badge:
         user.badge === 'DEFAULT'
           ? UserBadge.DEFAULT
