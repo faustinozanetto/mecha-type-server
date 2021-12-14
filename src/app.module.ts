@@ -18,7 +18,6 @@ import { UserSettingsModule } from 'modules/user-settings/user-settings.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
-    AuthModule,
     PassportModule.register({ session: true }),
     GraphQLModule.forRootAsync({
       useFactory: async () => {
@@ -38,6 +37,7 @@ import { UserSettingsModule } from 'modules/user-settings/user-settings.module';
     PrismaModule.forRoot({
       isGlobal: true,
     }),
+    AuthModule,
     DiscordModule,
     UserModule,
     UserSettingsModule,

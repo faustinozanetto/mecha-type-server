@@ -83,13 +83,10 @@ export class UserService {
     return { user: parsedUser };
   }
 
-  async logout(context: MechaContext): Promise<boolean> {
+  async logout(context: MechaContext) {
     try {
-      context.req.logout();
-      return true;
-    } catch (e) {
-      return false;
-    }
+      context.req.logOut();
+    } catch (e) {}
   }
 
   /**

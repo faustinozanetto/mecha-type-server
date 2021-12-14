@@ -108,14 +108,17 @@ type ErrorResponse {
   message: String!
 }
 
-type UserResponse {
-  user: User
+type FollowUserStatusResponse {
+  status: FollowStatus
   errors: [ErrorResponse!]
 }
 
-type UsersResponse {
-  users: [User!]
-  errors: [ErrorResponse!]
+"""Status of the follow request"""
+enum FollowStatus {
+  NOTSENT
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 type FilteredUser {
@@ -158,17 +161,14 @@ type FilteredUsersResponse {
   errors: [ErrorResponse!]
 }
 
-type FollowUserStatusResponse {
-  status: FollowStatus
+type RequestFollowUserResponse {
+  requestSent: Boolean
   errors: [ErrorResponse!]
 }
 
-"""Status of the follow request"""
-enum FollowStatus {
-  NOTSENT
-  PENDING
-  ACCEPTED
-  REJECTED
+type UnfollowUserResponse {
+  unfollow: Boolean
+  errors: [ErrorResponse!]
 }
 
 type UserFollower {
@@ -206,13 +206,13 @@ type UserFollowersResponse {
   errors: [ErrorResponse!]
 }
 
-type RequestFollowUserResponse {
-  requestSent: Boolean
+type UserResponse {
+  user: User
   errors: [ErrorResponse!]
 }
 
-type UnfollowUserResponse {
-  unfollow: Boolean
+type UsersResponse {
+  users: [User!]
   errors: [ErrorResponse!]
 }
 
