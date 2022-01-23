@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { DiscordAuthGuard, GithubAuthGuard } from 'modules/auth/utils/guards';
+import { DiscordAuthGuard, GithubAuthGuard, GoogleAuthGuard } from 'modules/auth/utils/guards';
 import { __AUTH_REDIRECT__, __URL__ } from 'utils/constants';
 
 @Controller({
@@ -18,15 +18,15 @@ export class AuthController {
     return;
   }
 
-  // /**
-  //  * GET /api/auth/google/login
-  //  * This is the route the user will visit to authenticate with google
-  //  */
-  // @Get('/google/login')
-  // @UseGuards(GoogleAuthGuard)
-  // googleLogin() {
-  //   return;
-  // }
+  /**
+   * GET /api/auth/google/login
+   * This is the route the user will visit to authenticate with google
+   */
+  @Get('/google/login')
+  @UseGuards(GoogleAuthGuard)
+  googleLogin() {
+    return;
+  }
 
   /**
    * GET /api/auth/github/login
@@ -38,15 +38,15 @@ export class AuthController {
     return;
   }
 
-  // /**
-  //  * GET /api/auth/google/redirect
-  //  * This is the redirect URL the OAuth2 Provider will call for google.
-  //  */
-  // @Get('/google/redirect')
-  // @UseGuards(GoogleAuthGuard)
-  // googleRedirect(@Res() res: Response) {
-  //   res.redirect(__AUTH_REDIRECT__ as string);
-  // }
+  /**
+   * GET /api/auth/google/redirect
+   * This is the redirect URL the OAuth2 Provider will call for google.
+   */
+  @Get('/google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  googleRedirect(@Res() res: Response) {
+    res.redirect(__AUTH_REDIRECT__ as string);
+  }
 
   /**
    * GET /api/auth/discord/redirect
@@ -81,11 +81,11 @@ export class AuthController {
           name: 'Discord',
           authUrl: `${__URL__}/api/v1/auth/discord/login`,
         },
-        // {
-        //   id: 'google',
-        //   name: 'Google',
-        //   authUrl: `${__URL__}/api/v1/auth/google/login`,
-        // },
+        {
+          id: 'google',
+          name: 'Google',
+          authUrl: `${__URL__}/api/v1/auth/google/login`,
+        },
         {
           id: 'github',
           name: 'Github',
