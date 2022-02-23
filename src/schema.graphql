@@ -2,97 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type TestPreset {
-  id: String!
+type AcceptFollowRequestResponse {
+  accepted: Boolean
+  errors: [ErrorResponse!]
+}
 
-  """Identifies the date and time when the object was created."""
+input AccuracyCreateInput {
+  amount: Float
   createdAt: Date
-
-  """Identifies the date and time when the object was last updated."""
+  id: String
   updatedAt: Date
-  type: TestType
-  language: TestLanguage
-  time: Int
-  words: Int
-  punctuated: Boolean
-  creatorImage: String
-  userId: String
-  creator: User!
-}
-
-"""Date custom scalar type"""
-scalar Date
-
-"""Test Type"""
-enum TestType {
-  WORDS
-  TIME
-}
-
-"""Test Language"""
-enum TestLanguage {
-  ENGLISH
-  SPANISH
-}
-
-type UserOnUser {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date
-  child: User
-  childId: String
-  parent: User
-  parentId: String
-}
-
-type TestPresetHistory {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date
-  userId: String!
-  testPresetId: String!
-  wpm: Float!
-  cpm: Float!
-  accuracy: Float!
-  keystrokes: Float!
-  correctChars: Float!
-  incorrectChars: Float!
-}
-
-type User {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date
-  username: String
-  oauthId: String
-  description: String
-  avatar: String
-  country: String
-  badge: UserBadge
-  authProvider: AuthProvider
-  followedBy: [UserOnUser!]
-  following: [UserOnUser!]
-  testPresetHistory: [TestPresetHistory!]
-  testPresets: [TestPreset!]
-}
-
-"""User Badges"""
-enum UserBadge {
-  DEFAULT
-  TESTER
-  PRO
 }
 
 """User auth provider service"""
@@ -103,43 +22,78 @@ enum AuthProvider {
   GOOGLE
 }
 
+input CharsPerMinuteCreateInput {
+  amount: Float
+  createdAt: Date
+  id: String
+  updatedAt: Date
+}
+
+input CopyPresetToUserInput {
+  presetId: String!
+  user: UserWhereInput!
+}
+
+input CreateTestPresetHistoryInput {
+  accuracy: Float!
+  correctChars: Float!
+  cpm: Float!
+  incorrectChars: Float!
+  keystrokes: Float!
+  testPresetId: String!
+  userId: String!
+  wpm: Float!
+}
+
+input CreateTestPresetInput {
+  creatorImage: String
+  language: TestLanguage!
+  punctuated: Boolean!
+  time: Int!
+  type: TestType!
+  userId: String
+  words: Int!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+type DenyFollowRequestResponse {
+  denied: Boolean
+  errors: [ErrorResponse!]
+}
+
 type ErrorResponse {
   field: String!
   message: String!
 }
 
-type FollowUserStatusResponse {
-  status: FollowStatus
-  errors: [ErrorResponse!]
-}
-
-"""Status of the follow request"""
-enum FollowStatus {
-  NOTSENT
-  PENDING
-  ACCEPTED
-  REJECTED
+input FilterUsersInput {
+  filterBy: UserFilterBy!
+  skip: Int!
+  take: Int!
+  where: UserWhereInput
 }
 
 type FilteredUser {
-  id: String!
+  authProvider: AuthProvider
+  avatar: String
+  badge: UserBadge
+  country: String
 
   """Identifies the date and time when the object was created."""
   createdAt: Date
+  description: String
+  followedBy: [UserOnUser!]
+  following: [UserOnUser!]
+  id: String!
+  oauthId: String
+  testPresetHistory: [TestPresetHistory!]
+  testPresets: [TestPreset!]
 
   """Identifies the date and time when the object was last updated."""
   updatedAt: Date
   username: String
-  oauthId: String
-  description: String
-  avatar: String
-  country: String
-  badge: UserBadge
-  authProvider: AuthProvider
-  followedBy: [UserOnUser!]
-  following: [UserOnUser!]
-  testPresetHistory: [TestPresetHistory!]
-  testPresets: [TestPreset!]
   value: Float!
 }
 
@@ -149,175 +103,136 @@ type FilteredUsersEdge {
 }
 
 type FilteredUsersPageInfo {
-  startCursor: Date
   endCursor: Date
   hasMore: Boolean
+  startCursor: Date
 }
 
 type FilteredUsersResponse {
   count: Int
-  pageInfo: FilteredUsersPageInfo
   edges: [FilteredUsersEdge!]
   errors: [ErrorResponse!]
+  pageInfo: FilteredUsersPageInfo
 }
 
-type RequestFollowUserResponse {
-  requestSent: Boolean
+"""Status of the follow request"""
+enum FollowStatus {
+  ACCEPTED
+  NOTSENT
+  PENDING
+  REJECTED
+}
+
+type FollowUserStatusResponse {
   errors: [ErrorResponse!]
-}
-
-type UnfollowUserResponse {
-  unfollow: Boolean
-  errors: [ErrorResponse!]
-}
-
-type UserFollower {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date
-  username: String!
-  avatar: String!
-  authProvider: AuthProvider
-  oauthId: String
   status: FollowStatus
 }
 
-type UserFollowerEdge {
-  cursor: Date
-  node: UserFollower
+input InputUpdateInput {
+  decrement: Float
+  divide: Float
+  increment: Float
+  multiply: Float
+  set: Float
 }
 
-type UserFollowersPageInfo {
-  startCursor: Date
-  endCursor: Date
-  hasMore: Boolean
+type Mutation {
+  acceptFollowRequest(followerId: String!, userId: String!): AcceptFollowRequestResponse!
+  copyPresetToUser(input: CopyPresetToUserInput!): TestPresetResponse!
+  createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
+  createTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!): TestPresetHistoryResponse!
+  createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
+  createUserSettings(input: UserSettingsCreateInput!): UserSettingsResponse!
+  denyFollowRequest(followerId: String!, userId: String!): DenyFollowRequestResponse!
+  logout: Boolean!
+  requestFollowUser(followerId: String!, userId: String!): RequestFollowUserResponse!
+  unfollowUser(followerId: String!, userId: String!): UnfollowUserResponse!
+  updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
+  updateUserSettings(input: UserSettingsUpdateInput!): UserSettingsResponse!
+  userCreateTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!, userId: String!): TestPresetHistoryResponse!
 }
 
-type UserFollowersResponse {
-  count: Int
-  acceptedRequests: Int
-  pendingRequests: Int
-  pageInfo: UserFollowersPageInfo
-  edges: [UserFollowerEdge!]
+type Query {
+  filterUsers(input: FilterUsersInput!): FilteredUsersResponse!
+  followUserStatus(followerId: String!, userId: String!): FollowUserStatusResponse!
+  me: UserResponse!
+  testPreset(id: String!): TestPresetResponse!
+  testPresets(input: TestPresetsFindInput): TestPresetsResponse!
+  user(where: UserWhereInput!): UserResponse!
+  userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!
+  userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
+  userTestPresets(userId: String!): TestPresetsResponse!
+  users(take: Int!): UsersResponse!
+}
+
+type RequestFollowUserResponse {
   errors: [ErrorResponse!]
+  requestSent: Boolean
 }
 
-type UserResponse {
-  user: User
-  errors: [ErrorResponse!]
+"""Test Language"""
+enum TestLanguage {
+  ENGLISH
+  SPANISH
 }
 
-type UsersResponse {
-  users: [User!]
-  errors: [ErrorResponse!]
+type TestPreset {
+  """Identifies the date and time when the object was created."""
+  createdAt: Date
+  creator: User!
+  creatorImage: String
+  id: String!
+  language: TestLanguage
+  punctuated: Boolean
+  time: Int
+  type: TestType
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: Date
+  userId: String
+  words: Int
 }
 
-type AcceptFollowRequestResponse {
-  accepted: Boolean
-  errors: [ErrorResponse!]
+type TestPresetHistory {
+  accuracy: Float!
+  correctChars: Float!
+  cpm: Float!
+
+  """Identifies the date and time when the object was created."""
+  createdAt: Date
+  id: String!
+  incorrectChars: Float!
+  keystrokes: Float!
+  testPresetId: String!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: Date
+  userId: String!
+  wpm: Float!
 }
 
-type DenyFollowRequestResponse {
-  denied: Boolean
+type TestPresetHistoryResponse {
   errors: [ErrorResponse!]
+  testPresetHistory: TestPresetHistory
 }
 
 type TestPresetResponse {
-  testPreset: TestPreset
   errors: [ErrorResponse!]
+  testPreset: TestPreset
+}
+
+input TestPresetWhereInput {
+  id: String
+  language: TestLanguage
+  punctuated: Boolean
+  time: Int
+  type: TestType
+  words: Int
 }
 
 type TestPresetsEdge {
   cursor: Date
   node: TestPreset
-}
-
-type TestPresetsPageInfo {
-  startCursor: Date
-  endCursor: Date
-  hasMore: Boolean
-}
-
-type TestPresetsResponse {
-  count: Int
-  pageInfo: TestPresetsPageInfo
-  edges: [TestPresetsEdge!]
-  errors: [ErrorResponse!]
-}
-
-type TestPresetHistoryResponse {
-  testPresetHistory: TestPresetHistory
-  errors: [ErrorResponse!]
-}
-
-type UserSettings {
-  id: String!
-
-  """Identifies the date and time when the object was created."""
-  createdAt: Date
-
-  """Identifies the date and time when the object was last updated."""
-  updatedAt: Date
-  userId: String
-  blindMode: Boolean
-  pauseOnError: Boolean
-  noBackspace: Boolean
-  typeSounds: Boolean
-  typeSoundsVolume: Float
-}
-
-type UserSettingsResponse {
-  userSettings: UserSettings
-  errors: [ErrorResponse!]
-}
-
-type Query {
-  me: UserResponse!
-  user(where: UserWhereInput!): UserResponse!
-  users(take: Int!): UsersResponse!
-  filterUsers(input: FilterUsersInput!): FilteredUsersResponse!
-  userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!
-  followUserStatus(followerId: String!, userId: String!): FollowUserStatusResponse!
-  userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
-  testPreset(id: String!): TestPresetResponse!
-  testPresets(input: TestPresetsFindInput): TestPresetsResponse!
-  userTestPresets(userId: String!): TestPresetsResponse!
-}
-
-input UserWhereInput {
-  id: String
-  username: String
-}
-
-input FilterUsersInput {
-  skip: Int!
-  take: Int!
-  filterBy: UserFilterBy!
-  where: UserWhereInput
-}
-
-"""Fields to filter Users By"""
-enum UserFilterBy {
-  WPM
-  CPM
-  ACCURACY
-  KEYSTROKES
-  TESTSCOMPLETED
-}
-
-input UserFollowersFindInput {
-  skip: Int!
-  take: Int!
-  where: UserWhereInput
-}
-
-input UserSettingsWhereInput {
-  id: String
-  userId: String
 }
 
 input TestPresetsFindInput {
@@ -326,115 +241,199 @@ input TestPresetsFindInput {
   where: TestPresetWhereInput
 }
 
-input TestPresetWhereInput {
-  id: String
-  type: TestType
-  language: TestLanguage
-  time: Int
-  words: Int
-  punctuated: Boolean
+type TestPresetsPageInfo {
+  endCursor: Date
+  hasMore: Boolean
+  startCursor: Date
 }
 
-type Mutation {
-  logout: Boolean!
-  updateUser(data: UserUpdateInput!, where: UserWhereInput!): UserResponse!
-  requestFollowUser(followerId: String!, userId: String!): RequestFollowUserResponse!
-  acceptFollowRequest(followerId: String!, userId: String!): AcceptFollowRequestResponse!
-  denyFollowRequest(followerId: String!, userId: String!): DenyFollowRequestResponse!
-  unfollowUser(followerId: String!, userId: String!): UnfollowUserResponse!
-  createUserSettings(input: UserSettingsCreateInput!): UserSettingsResponse!
-  updateUserSettings(input: UserSettingsUpdateInput!): UserSettingsResponse!
-  copyPresetToUser(input: CopyPresetToUserInput!): TestPresetResponse!
-  createTestPreset(data: CreateTestPresetInput!): TestPresetResponse!
-  createTestPresetUser(data: CreateTestPresetInput!): TestPresetResponse!
-  createTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!): TestPresetHistoryResponse!
-  userCreateTestPresetHistoryEntry(input: CreateTestPresetHistoryInput!, userId: String!): TestPresetHistoryResponse!
+type TestPresetsResponse {
+  count: Int
+  edges: [TestPresetsEdge!]
+  errors: [ErrorResponse!]
+  pageInfo: TestPresetsPageInfo
 }
 
-input UserUpdateInput {
-  name: String
-  description: String
-  email: String
-  image: String
-  country: String
+"""Test Type"""
+enum TestType {
+  TIME
+  WORDS
+}
+
+type UnfollowUserResponse {
+  errors: [ErrorResponse!]
+  unfollow: Boolean
+}
+
+type User {
+  authProvider: AuthProvider
+  avatar: String
   badge: UserBadge
-  keystrokes: InputUpdateInput
-  testsCompleted: InputUpdateInput
-  wordsWritten: InputUpdateInput
-  wordsPerMinute: WordsPerMinuteCreateInput
-  charsPerMinute: CharsPerMinuteCreateInput
-  accuracy: AccuracyCreateInput
-}
+  country: String
 
-input InputUpdateInput {
-  set: Float
-  increment: Float
-  decrement: Float
-  multiply: Float
-  divide: Float
-}
-
-input WordsPerMinuteCreateInput {
-  id: String
-  amount: Float
+  """Identifies the date and time when the object was created."""
   createdAt: Date
+  description: String
+  followedBy: [UserOnUser!]
+  following: [UserOnUser!]
+  id: String!
+  oauthId: String
+  testPresetHistory: [TestPresetHistory!]
+  testPresets: [TestPreset!]
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: Date
+  username: String
+}
+
+"""User Badges"""
+enum UserBadge {
+  DEFAULT
+  PRO
+  TESTER
+}
+
+"""Fields to filter Users By"""
+enum UserFilterBy {
+  ACCURACY
+  CPM
+  KEYSTROKES
+  TESTSCOMPLETED
+  WPM
+}
+
+type UserFollower {
+  authProvider: AuthProvider
+  avatar: String!
+
+  """Identifies the date and time when the object was created."""
+  createdAt: Date
+  id: String!
+  oauthId: String
+  status: FollowStatus
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: Date
+  username: String!
+}
+
+type UserFollowerEdge {
+  cursor: Date
+  node: UserFollower
+}
+
+input UserFollowersFindInput {
+  skip: Int!
+  take: Int!
+  where: UserWhereInput
+}
+
+type UserFollowersPageInfo {
+  endCursor: Date
+  hasMore: Boolean
+  startCursor: Date
+}
+
+type UserFollowersResponse {
+  acceptedRequests: Int
+  count: Int
+  edges: [UserFollowerEdge!]
+  errors: [ErrorResponse!]
+  pageInfo: UserFollowersPageInfo
+  pendingRequests: Int
+}
+
+type UserOnUser {
+  child: User
+  childId: String
+
+  """Identifies the date and time when the object was created."""
+  createdAt: Date
+  id: String!
+  parent: User
+  parentId: String
+
+  """Identifies the date and time when the object was last updated."""
   updatedAt: Date
 }
 
-input CharsPerMinuteCreateInput {
-  id: String
-  amount: Float
-  createdAt: Date
-  updatedAt: Date
+type UserResponse {
+  errors: [ErrorResponse!]
+  user: User
 }
 
-input AccuracyCreateInput {
-  id: String
-  amount: Float
+type UserSettings {
+  blindMode: Boolean
+
+  """Identifies the date and time when the object was created."""
   createdAt: Date
+  id: String!
+  noBackspace: Boolean
+  pauseOnError: Boolean
+  typeSounds: Boolean
+  typeSoundsVolume: Float
+
+  """Identifies the date and time when the object was last updated."""
   updatedAt: Date
+  userId: String
 }
 
 input UserSettingsCreateInput {
-  userId: String
   blindMode: Boolean
-  pauseOnError: Boolean
   noBackspace: Boolean
+  pauseOnError: Boolean
   typeSounds: Boolean
   typeSoundsVolume: Float
+  userId: String
+}
+
+type UserSettingsResponse {
+  errors: [ErrorResponse!]
+  userSettings: UserSettings
 }
 
 input UserSettingsUpdateInput {
-  userId: String
   blindMode: Boolean
-  pauseOnError: Boolean
   noBackspace: Boolean
+  pauseOnError: Boolean
   typeSounds: Boolean
   typeSoundsVolume: Float
-}
-
-input CopyPresetToUserInput {
-  presetId: String!
-  user: UserWhereInput!
-}
-
-input CreateTestPresetInput {
   userId: String
-  creatorImage: String
-  type: TestType!
-  language: TestLanguage!
-  time: Int!
-  words: Int!
-  punctuated: Boolean!
 }
 
-input CreateTestPresetHistoryInput {
-  userId: String!
-  testPresetId: String!
-  wpm: Float!
-  cpm: Float!
-  accuracy: Float!
-  keystrokes: Float!
-  correctChars: Float!
-  incorrectChars: Float!
+input UserSettingsWhereInput {
+  id: String
+  userId: String
+}
+
+input UserUpdateInput {
+  accuracy: AccuracyCreateInput
+  badge: UserBadge
+  charsPerMinute: CharsPerMinuteCreateInput
+  country: String
+  description: String
+  email: String
+  image: String
+  keystrokes: InputUpdateInput
+  name: String
+  testsCompleted: InputUpdateInput
+  wordsPerMinute: WordsPerMinuteCreateInput
+  wordsWritten: InputUpdateInput
+}
+
+input UserWhereInput {
+  id: String
+  username: String
+}
+
+type UsersResponse {
+  errors: [ErrorResponse!]
+  users: [User!]
+}
+
+input WordsPerMinuteCreateInput {
+  amount: Float
+  createdAt: Date
+  id: String
+  updatedAt: Date
 }
