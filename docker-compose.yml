@@ -31,4 +31,4 @@ services:
 
 volumes:
   postgres:
-    name: nest-prisma-docker-db
+    name: mecha-type-server
