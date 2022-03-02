@@ -1,6 +1,7 @@
 import { User } from '@prisma/client';
 import { Response, Request } from 'express';
 import { AuthProvider } from 'models/user/user.model';
+import { PassportStatic } from 'passport';
 
 export type UserDetails = {
   username: string;
@@ -17,8 +18,9 @@ export type UserStatus = {
 };
 
 export type MechaContext = {
-  req: Request;
+  req: Request & any;
   res: Response;
 };
 
-export type Done = (err: Error, user: User) => void;
+export type Done = (err: Error, id: string) => void;
+export type DoneUser = (err: Error, user: User | undefined) => void;

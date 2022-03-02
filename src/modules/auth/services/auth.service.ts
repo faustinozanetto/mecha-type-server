@@ -9,20 +9,9 @@ export class AuthService implements AuthenticationProvider {
   constructor(private prisma: PrismaService) {}
 
   async validateUser(details: UserDetails) {
-    const user = await this.prisma.user.findUnique({
-      where: { oauthId: details.oauthId ?? '' },
-      include: {
-        followers: true,
-        following: true,
-        testPresetHistory: true,
-        testPresets: true,
-      },
-    });
-    if (user) {
-      await this.prisma.user.update({
-        where: {
-          oauthId: details.oauthId ?? '',
-        },
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { username: details.username },
         include: {
           followers: true,
           following: true,
@@ -31,9 +20,10 @@ export class AuthService implements AuthenticationProvider {
         },
         data: details,
       });
-      return user;
+      return updatedUser;
+    } catch (error) {
+      return this.createUser(details);
     }
-    return this.createUser(details);
   }
 
   async createUser(details: UserDetails) {
@@ -42,15 +32,12 @@ export class AuthService implements AuthenticationProvider {
     });
   }
 
-  async findUser(oauthId: string): Promise<User | undefined> {
-    return await this.prisma.user.findUnique({
-      where: { oauthId: oauthId ?? '' },
-      include: {
-        followers: true,
-        following: true,
-        testPresetHistory: true,
-        testPresets: true,
-      },
+  async findUser(id: string): Promise<User | undefined> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: id },
     });
+    if (user) {
+      return user;
+    }
   }
 }
