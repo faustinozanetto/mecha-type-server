@@ -42,9 +42,10 @@ export class AuthService implements AuthenticationProvider {
     });
   }
 
-  async findUser(oauthId: string): Promise<User | undefined> {
+  async findUser(id: string): Promise<User | undefined> {
+    console.log('find');
     return await this.prisma.user.findUnique({
-      where: { oauthId: oauthId ?? '' },
+      where: { id: id ?? '' },
       include: {
         followers: true,
         following: true,

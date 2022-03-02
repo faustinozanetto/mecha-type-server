@@ -8,10 +8,9 @@ import { NestConfig } from './config/config.interface';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
-import * as session from 'express-session';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { PrismaClient } from '.prisma/client';
+import * as session from 'express-session';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -41,7 +40,16 @@ async function bootstrap() {
   });
 
   /*========= SESSION =========*/
-  const prisma = new PrismaClient();
+  app.use(
+    session({
+      secret: 'secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 360000 },
+    }),
+  );
+  //const prisma = new PrismaClient();
+  /*
   app.use(
     session({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -62,6 +70,7 @@ async function bootstrap() {
       },
     }),
   );
+  */
 
   /*========= VALIDATION =========*/
   app.useGlobalPipes(new ValidationPipe());

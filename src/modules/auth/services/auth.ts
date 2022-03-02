@@ -4,5 +4,5 @@ import { UserDetails } from 'types/types';
 export interface AuthenticationProvider {
   validateUser(details: UserDetails);
   createUser(details: UserDetails);
-  findUser(oauthId: string): Promise<User | undefined>;
+  findUser(id: string): Promise<User | undefined>;
 }

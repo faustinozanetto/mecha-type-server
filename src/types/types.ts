@@ -21,4 +21,5 @@ export type MechaContext = {
   res: Response;
 };
 
-export type Done = (err: Error, user: User) => void;
+export type Done = (err: Error, id: string) => void;
+export type DoneUser = (err: Error, user: User) => void;

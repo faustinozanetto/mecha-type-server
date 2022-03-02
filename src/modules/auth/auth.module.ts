@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { DiscordStrategy } from './utils/discord-strategy';
@@ -22,6 +23,6 @@ import { SessionSerializer } from './utils/serializer';
       useClass: AuthService,
     },
   ],
-  imports: [],
+  imports: [PassportModule.register({ session: true })],
 })
 export class AuthModule {}
