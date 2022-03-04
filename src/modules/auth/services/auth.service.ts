@@ -10,25 +10,37 @@ export class AuthService implements AuthenticationProvider {
 
   async validateUser(details: UserDetails) {
     try {
-      const updatedUser = await this.prisma.user.update({
+      const userExists = await this.prisma.user.findUnique({
         where: { username: details.username },
-        include: {
-          followers: true,
-          following: true,
-          testPresetHistory: true,
-          testPresets: true,
-        },
-        data: details,
       });
-      return updatedUser;
-    } catch (error) {
-      return this.createUser(details);
-    }
+      if (userExists) {
+        const updatedUser = await this.prisma.user.update({
+          where: { username: details.username },
+          // include: {
+          // followers: true,
+          // following: true,
+          // testPresetHistory: true,
+          // testPresets: true,
+          // },
+          data: details,
+        });
+        return updatedUser;
+      } else {
+        return this.createUser(details);
+      }
+    } catch (error) {}
   }
 
   async createUser(details: UserDetails) {
     return await this.prisma.user.create({
-      data: details,
+      data: {
+        oauthId: details.oauthId,
+        username: details.username,
+        avatar: details.avatar,
+        authProvider: details.authProvider,
+        accessToken: details.accessToken,
+        refreshToken: details.refreshToken,
+      },
     });
   }
 

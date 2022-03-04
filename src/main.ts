@@ -42,6 +42,16 @@ async function bootstrap() {
 
   /*========= SESSION =========*/
   const prisma = new PrismaClient();
+  const developmentCookie: session.CookieOptions = {
+    sameSite: false,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+  const productionCookie: session.CookieOptions = {
+    sameSite: 'none',
+    httpOnly: false,
+    secure: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
   app.use(
     session({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -56,14 +66,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: true,
       secret: process.env.SESSION_SECRET,
-      cookie: {
-        // httpOnly: true,
-        sameSite: 'none',
-        httpOnly: false,
-        secure: true,
-        // secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      },
+      cookie: __PROD__ ? productionCookie : developmentCookie,
     }),
   );
 
