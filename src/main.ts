@@ -32,7 +32,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
-  app.set('trust proxy', 1);
+  app.enable('trust proxy');
 
   /*========= CORS =========*/
   app.enableCors({
@@ -51,12 +51,16 @@ async function bootstrap() {
         dbRecordIdIsSessionId: true,
         dbRecordIdFunction: undefined,
       }),
-      resave: true,
+      name: 'session',
+      proxy: true,
+      resave: false,
       saveUninitialized: true,
       secret: process.env.SESSION_SECRET,
       cookie: {
         // httpOnly: true,
-        // sameSite: 'strict',
+        sameSite: 'none',
+        httpOnly: false,
+        secure: true,
         // secure: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       },
