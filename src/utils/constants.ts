@@ -20,7 +20,7 @@ export const __URL__ = __PROD__ ? 'https://mecha-type-api.herokuapp.com' : 'http
  */
 export const __DB_URL__ = process.env.DATABASE_URL;
 
-export const __AUTH_REDIRECT__: string = __ORIGIN__;
+export const __AUTH_REDIRECT__: string = __ORIGIN__ + '/practice';
 
 export const __DISCORD_CALLBACK__: string = __PROD__
   ? __URL__ + process.env.DISCORD_CALLBACK_URL

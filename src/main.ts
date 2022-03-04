@@ -4,12 +4,13 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { __ORIGIN__, __PROD__ } from 'utils/constants';
 import { AppModule } from './app.module';
+import Redis from 'ioredis';
 import { NestConfig } from './config/config.interface';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
+import * as connectRedis from 'connect-redis';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { PrismaClient } from '.prisma/client';
 import * as session from 'express-session';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -40,12 +41,22 @@ async function bootstrap() {
   });
 
   /*========= SESSION =========*/
+  const RedisStore = connectRedis(session);
+  const redis = new Redis(process.env.REDIS_URL);
   app.use(
     session({
+      name: 'session',
+      store: new RedisStore({
+        client: redis,
+        disableTouch: true,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
+        httpOnly: true,
+      },
+      saveUninitialized: false,
       secret: 'secret',
       resave: false,
-      saveUninitialized: false,
-      cookie: { maxAge: 360000 },
     }),
   );
   //const prisma = new PrismaClient();

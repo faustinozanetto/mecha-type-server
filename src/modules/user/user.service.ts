@@ -49,44 +49,54 @@ export class UserService {
         ],
       };
     }
-    const user = await this.prisma.user.findUnique({
+    try {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      where: { id: context.req.session.passport.user.id },
-      include: { testPresetHistory: true, testPresets: true },
-    });
-    const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
-      return {
-        ...preset,
-        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+      const userID: string = context.req.session.passport.user;
+      const user = await this.prisma.user.findUnique({
+        where: { id: userID },
+        include: { testPresetHistory: true, testPresets: true },
+      });
+      const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
+        return {
+          ...preset,
+          type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+          language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+        };
+      });
+      const parsedUser: User = {
+        ...user,
+        testPresets: parsedPresets,
+        badge:
+          user.badge === 'DEFAULT'
+            ? UserBadge.DEFAULT
+            : user.badge === 'PRO'
+            ? UserBadge.PRO
+            : UserBadge.TESTER,
+        authProvider:
+          user.authProvider === 'DEFAULT'
+            ? AuthProvider.DEFAULT
+            : user.authProvider === 'DISCORD'
+            ? AuthProvider.DISCORD
+            : user.authProvider === 'GITHUB'
+            ? AuthProvider.GITHUB
+            : AuthProvider.GOOGLE,
       };
-    });
-    const parsedUser: User = {
-      ...user,
-      testPresets: parsedPresets,
-      badge:
-        user.badge === 'DEFAULT'
-          ? UserBadge.DEFAULT
-          : user.badge === 'PRO'
-          ? UserBadge.PRO
-          : UserBadge.TESTER,
-      authProvider:
-        user.authProvider === 'DEFAULT'
-          ? AuthProvider.DEFAULT
-          : user.authProvider === 'DISCORD'
-          ? AuthProvider.DISCORD
-          : user.authProvider === 'GITHUB'
-          ? AuthProvider.GITHUB
-          : AuthProvider.GOOGLE,
-    };
-    return { user: parsedUser };
+      return { user: parsedUser };
+    } catch (error) {
+      return {
+        errors: [
+          {
+            field: 'user',
+            message: 'An error occurred',
+          },
+        ],
+      };
+    }
   }
 
   async logout(context: MechaContext) {
-    try {
-      context.req.logOut();
-    } catch (e) {}
+    return false;
   }
 
   /**
