@@ -1,6 +1,11 @@
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
-import { DiscordAuthGuard, GithubAuthGuard, GoogleAuthGuard } from 'modules/auth/utils/guards';
+import { Controller, Get, HttpCode, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  AuthenticatedGuard,
+  DiscordAuthGuard,
+  GithubAuthGuard,
+  GoogleAuthGuard,
+} from 'modules/auth/utils/guards';
+import { Response, Request } from 'express';
 import { __AUTH_REDIRECT__, __URL__ } from 'utils/constants';
 
 @Controller({
@@ -66,6 +71,22 @@ export class AuthController {
   @UseGuards(GithubAuthGuard)
   githubRedirect(@Res() res: Response) {
     res.redirect(__AUTH_REDIRECT__ as string);
+  }
+
+  @Get('/logout')
+  @HttpCode(200)
+  @UseGuards(AuthenticatedGuard)
+  async logout(@Res() res: Response, @Req() req: Request) {
+    await new Promise<void>((resolve, reject) => {
+      req.session?.destroy((err) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve();
+      });
+    });
+    res.clearCookie('session');
+    return res.send({ success: true });
   }
 
   /**
