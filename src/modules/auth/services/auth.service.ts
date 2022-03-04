@@ -11,21 +11,17 @@ export class AuthService implements AuthenticationProvider {
   async validateUser(details: UserDetails) {
     try {
       const userExists = await this.prisma.user.findUnique({
-        where: { username: details.username },
+        where: { oauthId: details.oauthId },
       });
       if (userExists) {
+        console.log('Updating user: ', details.username);
         const updatedUser = await this.prisma.user.update({
-          where: { username: details.username },
-          // include: {
-          // followers: true,
-          // following: true,
-          // testPresetHistory: true,
-          // testPresets: true,
-          // },
+          where: { oauthId: details.oauthId },
           data: details,
         });
         return updatedUser;
       } else {
+        console.log('Creating user: ', details.username);
         return this.createUser(details);
       }
     } catch (error) {}
