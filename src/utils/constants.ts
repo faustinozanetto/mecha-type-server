@@ -11,7 +11,7 @@ export const __PORT__ = process.env.PORT || 4000;
 /**
  * Return the origin uri.
  */
-export const __ORIGIN__ = __PROD__ ? 'https://mecha-type.vercel.app' : 'http://localhost:3000';
+export const __ORIGIN__ = __PROD__ ? 'https://mechatype.vercel.app' : 'http://localhost:3000';
 
 export const __URL__ = __PROD__ ? 'https://mecha-type-api.herokuapp.com' : 'http://localhost:4000';
 
