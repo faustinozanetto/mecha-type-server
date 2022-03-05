@@ -1,4 +1,6 @@
+import { CaretStyle as CaretStylePrisma } from '@prisma/client';
 import { Request } from 'express';
+import { CaretStyle } from 'models/user-settings/user-settings.model';
 import { TestLanguage, TestPreset, TestType } from '../models/test-preset/test-preset.model';
 
 /**
@@ -28,6 +30,34 @@ export const calculateAverage = (data: number[]): number => {
     return Number.parseFloat((sum / data.length).toFixed(2));
   }
   return 0;
+};
+
+export const parsePrismaCaretStyle = (prismaType: CaretStylePrisma): CaretStyle => {
+  switch (prismaType) {
+    case 'LINE': {
+      return CaretStyle.LINE;
+    }
+    case 'BLOCK': {
+      return CaretStyle.BLOCK;
+    }
+    case 'HOLLOW': {
+      return CaretStyle.HOLLOW;
+    }
+  }
+};
+
+export const parseModelCaretStyle = (modelType: CaretStyle): CaretStylePrisma => {
+  switch (modelType) {
+    case CaretStyle.LINE: {
+      return 'LINE';
+    }
+    case CaretStyle.BLOCK: {
+      return 'BLOCK';
+    }
+    case CaretStyle.HOLLOW: {
+      return 'HOLLOW';
+    }
+  }
 };
 
 /**

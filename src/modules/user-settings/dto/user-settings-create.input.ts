@@ -1,9 +1,16 @@
 import { Field, Float, InputType } from '@nestjs/graphql';
+import { CaretStyle } from 'models/user-settings/user-settings.model';
 
 @InputType()
 export class UserSettingsCreateInput {
+  @Field(() => String, { nullable: false })
+  userId: string;
+
+  @Field(() => CaretStyle, { nullable: true })
+  caretStyle?: CaretStyle;
+
   @Field(() => String, { nullable: true })
-  userId?: string;
+  caretColor?: string;
 
   @Field(() => Boolean, { nullable: true })
   blindMode?: boolean;

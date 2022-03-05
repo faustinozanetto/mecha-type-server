@@ -22,6 +22,13 @@ enum AuthProvider {
   GOOGLE
 }
 
+"""Style of the Caret"""
+enum CaretStyle {
+  BLOCK
+  HOLLOW
+  LINE
+}
+
 input CharsPerMinuteCreateInput {
   amount: Float
   createdAt: Date
@@ -364,6 +371,8 @@ type UserResponse {
 
 type UserSettings {
   blindMode: Boolean
+  caretColor: String
+  caretStyle: CaretStyle
 
   """Identifies the date and time when the object was created."""
   createdAt: Date
@@ -380,11 +389,13 @@ type UserSettings {
 
 input UserSettingsCreateInput {
   blindMode: Boolean
+  caretColor: String
+  caretStyle: CaretStyle
   noBackspace: Boolean
   pauseOnError: Boolean
   typeSounds: Boolean
   typeSoundsVolume: Float
-  userId: String
+  userId: String!
 }
 
 type UserSettingsResponse {
@@ -394,11 +405,13 @@ type UserSettingsResponse {
 
 input UserSettingsUpdateInput {
   blindMode: Boolean
+  caretColor: String
+  caretStyle: CaretStyle
   noBackspace: Boolean
   pauseOnError: Boolean
   typeSounds: Boolean
   typeSoundsVolume: Float
-  userId: String
+  userId: String!
 }
 
 input UserSettingsWhereInput {
