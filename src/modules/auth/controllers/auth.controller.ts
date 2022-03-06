@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
 import {
   AuthenticatedGuard,
   DiscordAuthGuard,
@@ -6,7 +6,7 @@ import {
   GoogleAuthGuard,
 } from 'modules/auth/utils/guards';
 import { Response, Request } from 'express';
-import { __AUTH_REDIRECT__, __URL__ } from 'utils/constants';
+import { __AUTH_REDIRECT__, __ORIGIN__, __URL__ } from 'utils/constants';
 
 @Controller({
   path: 'auth',
@@ -77,16 +77,17 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(AuthenticatedGuard)
   async logout(@Res() res: Response, @Req() req: Request) {
-    await new Promise<void>((resolve, reject) => {
-      req.session?.destroy((err) => {
+    return new Promise((resolve, reject) => {
+      req.session.destroy((err) => {
         if (err) {
-          return reject(err);
+          reject(err);
         }
-        return resolve();
+        req.logout();
+        res.send(200);
       });
     });
-    res.clearCookie('session');
-    return res.send({ success: true });
+
+    //return res.send({ success: true });
   }
 
   /**

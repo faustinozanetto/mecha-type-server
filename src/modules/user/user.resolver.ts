@@ -1,22 +1,28 @@
-import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { FilteredUsersResponse } from 'models/responses/user/filtered-users-response.modal';
 import { RequestFollowUserResponse } from 'models/responses/user/request-follow-user.response';
 import { UnfollowUserResponse } from 'models/responses/user/unfollow-user.response copy';
 import { UserFollowersResponse } from 'models/responses/user/user-followers-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
-import { User, UserFilterBy } from 'models/user/user.model';
+import { User } from 'models/user/user.model';
 import { UserService } from 'modules/user/user.service';
 import { UserUpdateInput } from './dto/user-update.input';
 import { UserWhereInput } from './dto/user-where.input';
 import type { MechaContext } from 'types/types';
-import { UseGuards } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { GraphQLAuthGuard } from 'modules/auth/utils/guards';
 import { FollowUserStatusResponse } from 'models/responses/user/follow-user-status.response';
 import { UserFollowersFindInput } from './dto/user-followers-find.input';
 import { AcceptFollowRequestResponse } from 'models/responses/user/accept-follow-user.response';
 import { DenyFollowRequestResponse } from 'models/responses/user/deny-follow-user.response';
 import { FilterUsersInput } from './dto/filter-users.input';
+import { PUB_SUB } from 'modules/pubsub/pubsub.module';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+
+enum SUBSCRIPTION_EVENTS {
+  followRequestSent = 'followRequestSent',
+}
 
 @Resolver(() => User)
 export class UserResolver {
@@ -83,8 +89,19 @@ export class UserResolver {
     @Args('userId', { type: () => String }) userId: string,
     @Args('followerId', { type: () => String }) followerId: string,
   ): Promise<RequestFollowUserResponse> {
+    // this.pubSub.publish(SUBSCRIPTION_EVENTS.followRequestSent, {
+    //   userId: userId,
+    //   followerId: followerId,
+    // });
+    // console.log('publish');
     return this.userService.requestFollowUser(userId, followerId);
   }
+
+  // @Subscription(() => RequestFollowUserResponse)
+  // async requestFollowUserSent() {
+  //   console.log('subscription');
+  //   return this.pubSub.asyncIterator(SUBSCRIPTION_EVENTS.followRequestSent);
+  // }
 
   @UseGuards(GraphQLAuthGuard)
   @Mutation(() => AcceptFollowRequestResponse)

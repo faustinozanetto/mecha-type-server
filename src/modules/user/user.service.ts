@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { AuthProvider, User, UserBadge, UserFilterBy } from 'models/user/user.model';
+import { AuthProvider, User, UserBadge } from 'models/user/user.model';
 import { UserWhereInput } from 'modules/user/dto/user-where.input';
 import { UserUpdateInput } from 'modules/user/dto/user-update.input';
 import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
 import { UsersResponse } from 'models/responses/user/users-response.model';
-import { calculateAverage } from 'utils/helper-functions';
 import {
   FilteredUsersEdge,
   FilteredUsersResponse,
 } from 'models/responses/user/filtered-users-response.modal';
-import { FilteredUser } from 'models/user/filtered-user';
 import {
   UserFollowerEdge,
   UserFollowersResponse,

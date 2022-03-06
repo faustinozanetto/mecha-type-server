@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import Redis from 'ioredis';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -6,12 +7,14 @@ import { __ORIGIN__, __PROD__ } from 'utils/constants';
 import { AppModule } from './app.module';
 import { NestConfig } from './config/config.interface';
 import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
 import * as passport from 'passport';
 import * as session from 'express-session';
+import * as connectRedis from 'connect-redis';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { PrismaClient } from '.prisma/client';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { redis } from 'redis';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -41,7 +44,14 @@ async function bootstrap() {
   });
 
   /*========= SESSION =========*/
-  const prisma = new PrismaClient();
+  //const prisma = new PrismaClient();
+  const RedisStore = connectRedis(session);
+  const redis = new Redis({
+    host: process.env.REDIS_HOST as string,
+    username: process.env.REDIS_USER as string,
+    password: process.env.REDIS_PASS as string,
+    port: Number(process.env.REDIS_PORT),
+  });
   const developmentCookie: session.CookieOptions = {
     sameSite: false,
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -54,17 +64,14 @@ async function bootstrap() {
   };
   app.use(
     session({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      store: new PrismaSessionStore(prisma, {
-        checkPeriod: 2 * 60 * 1000, //ms
-        dbRecordIdIsSessionId: true,
-        dbRecordIdFunction: undefined,
+      store: new RedisStore({
+        client: redis,
+        disableTouch: true,
       }),
       name: 'session',
       proxy: true,
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
       cookie: __PROD__ ? productionCookie : developmentCookie,
     }),
@@ -75,12 +82,20 @@ async function bootstrap() {
 
   /*========= MIDDLEAWARES =========*/
   app.use(cookieParser());
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
 
   /*========= PASSPORT =========*/
   app.use(passport.initialize());
   app.use(passport.session());
+
+  /*==========SWAGGER===========*/
+  const config = new DocumentBuilder()
+    .setTitle('Mecha Type')
+    .setDescription('Mecha Type API')
+    .setVersion('1.0')
+    .addTag('mechatype')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   /*========= START =========*/
   await app.listen(process.env.PORT || nestConfig?.port || 4000);

@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import config from './config/config';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { PassportModule } from '@nestjs/passport';
 import { DateScalar } from './common/scalars/date.scalar';
-import { __ORIGIN__, __PROD__ } from 'utils/constants';
 import { DiscordModule } from 'discord/discord.module';
 import { AuthModule } from 'modules/auth/auth.module';
 import { UserModule } from 'modules/user/user.module';
@@ -15,28 +13,12 @@ import { TestPresetHistoryModule } from 'modules/test-preset-history/test-preset
 import { UserSettingsModule } from 'modules/user-settings/user-settings.module';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { GqlConfigService } from 'graphql/graphql.config.service';
-// require('dotenv').config();
+import { PubsubModule } from 'modules/pubsub/pubsub.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     PassportModule.register({ session: true }),
-    // GraphQLModule.forRootAsync({
-    //   useFactory: async () => {
-    //     return {
-    //       installSubscriptionHandlers: true,
-    //       cors: {
-    //         origin: __ORIGIN__,
-    //         credentials: true,
-    //       },
-    //       autoSchemaFile: './src/schema.graphql',
-    //       playground: !__PROD__,
-    //       useGlobalPrefix: true,
-    //       context: ({ req, res }) => ({ req, res }),
-    //     };
-    //   },
-    // }),
-    // Graphql module setup.
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       useClass: GqlConfigService,
@@ -45,6 +27,7 @@ import { GqlConfigService } from 'graphql/graphql.config.service';
     PrismaModule.forRoot({
       isGlobal: true,
     }),
+    //PubsubModule,
     AuthModule,
     DiscordModule,
     UserModule,
