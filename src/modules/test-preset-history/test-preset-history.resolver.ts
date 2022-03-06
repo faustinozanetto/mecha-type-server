@@ -1,12 +1,21 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { TestPreset } from 'models/test-preset/test-preset.model';
 import { TestPresetHistoryService } from './test-preset-history.service';
 import { TestPresetHistoryResponse } from 'models/responses/test-preset-history/test-preset-history-response.model';
 import { CreateTestPresetHistoryInput } from './dto/create-test-preset-history.input';
+import { TestPresetsHistoryResponse } from 'models/responses/test-preset-history/test-presets-history-response.model';
+import { UserTestPresetsHistoryInput } from './dto/user-test-presets-history.input';
 
 @Resolver(() => TestPreset)
 export class TestPresetHistoryResolver {
   constructor(private readonly testPresetHistoryService: TestPresetHistoryService) {}
+
+  @Query(() => TestPresetsHistoryResponse)
+  async userTestPresetsHistory(
+    @Args('input') input: UserTestPresetsHistoryInput,
+  ): Promise<TestPresetsHistoryResponse> {
+    return await this.testPresetHistoryService.userTestPresetsHistory(input);
+  }
 
   @Mutation(() => TestPresetHistoryResponse)
   async createTestPresetHistoryEntry(

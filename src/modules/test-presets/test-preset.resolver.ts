@@ -10,6 +10,7 @@ import { User } from 'models/user/user.model';
 import { UseGuards } from '@nestjs/common';
 import { GraphQLAuthGuard } from 'modules/auth/utils/guards';
 import { CopyPresetToUserInput } from './dto/copy-preset-to-user.input';
+import { UserTestPresetsInput } from './dto/user-test-presets.input';
 
 @Resolver(() => TestPreset)
 export class TestPresetResolver {
@@ -34,8 +35,8 @@ export class TestPresetResolver {
   }
 
   @Query(() => TestPresetsResponse)
-  async userTestPresets(@Args('userId') userId: string): Promise<TestPresetsResponse> {
-    return await this.testPresetService.userTestPresets(userId);
+  async userTestPresets(@Args('input') input: UserTestPresetsInput): Promise<TestPresetsResponse> {
+    return await this.testPresetService.userTestPresets(input);
   }
 
   @Mutation(() => TestPresetResponse)

@@ -168,7 +168,8 @@ type Query {
   user(where: UserWhereInput!): UserResponse!
   userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!
   userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
-  userTestPresets(userId: String!): TestPresetsResponse!
+  userTestPresets(input: UserTestPresetsInput!): TestPresetsResponse!
+  userTestPresetsHistory(input: UserTestPresetsHistoryInput!): TestPresetsHistoryResponse!
   users(take: Int!): UsersResponse!
 }
 
@@ -246,6 +247,11 @@ input TestPresetsFindInput {
   skip: Int!
   take: Int!
   where: TestPresetWhereInput
+}
+
+type TestPresetsHistoryResponse {
+  errors: [ErrorResponse!]
+  testPresetHistory: [TestPresetHistory!]
 }
 
 type TestPresetsPageInfo {
@@ -417,6 +423,16 @@ input UserSettingsUpdateInput {
 input UserSettingsWhereInput {
   id: String
   userId: String
+}
+
+input UserTestPresetsHistoryInput {
+  username: String
+}
+
+input UserTestPresetsInput {
+  skip: Int!
+  take: Int!
+  username: String
 }
 
 input UserUpdateInput {

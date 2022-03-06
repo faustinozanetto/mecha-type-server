@@ -11,6 +11,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { CreateTestPresetInput } from 'modules/test-presets/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'modules/test-presets/dto/test-presets-find.input';
 import { CopyPresetToUserInput } from './dto/copy-preset-to-user.input';
+import { UserTestPresetsInput } from './dto/user-test-presets.input';
 
 @Injectable()
 export class TestPresetService {
@@ -123,24 +124,61 @@ export class TestPresetService {
     };
   }
 
-  async userTestPresets(userId: string): Promise<TestPresetsResponse> {
+  async userTestPresets(input: UserTestPresetsInput): Promise<TestPresetsResponse> {
+    // Fetch presets.
     const presets = await this.prisma.testPreset.findMany({
-      where: { userId },
+      take: input.take,
+      skip: input.skip,
+      where: {
+        user: { username: { equals: input.username } },
+      },
+      orderBy: { createdAt: 'desc' },
     });
-    const parsedPresets: TestPreset[] = [];
-    presets.map((preset) => {
-      // Converting the preset to a valid one.
-      const parsedPreset = {
-        ...preset,
-        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+
+    // Error handling
+    if (!presets.length) {
+      return {
+        count: 0,
+        edges: [],
+        pageInfo: {
+          hasMore: false,
+          startCursor: null,
+          endCursor: null,
+        },
       };
-      parsedPresets.push(parsedPreset);
+    }
+
+    // Check if there are more pages
+    const hasMore = Boolean(
+      await this.prisma.testPreset.count({
+        take: 1,
+        where: {
+          createdAt: { lt: presets[presets.length - 1].createdAt },
+        },
+      }),
+    );
+
+    // Map edges.
+    const edges: TestPresetsEdge[] = presets.map((edge) => {
+      return {
+        cursor: edge.createdAt,
+        node: {
+          ...edge,
+          type: edge.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+          language: edge.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+        },
+      };
     });
+
+    // Return
     return {
-      count: 0,
-      edges: [],
-      pageInfo: { endCursor: null, startCursor: null, hasMore: false },
+      count: edges.length,
+      edges,
+      pageInfo: {
+        hasMore,
+        startCursor: edges[0].cursor,
+        endCursor: edges[edges.length - 1].cursor,
+      },
     };
   }
 

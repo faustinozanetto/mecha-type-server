@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { TestPresetHistoryResponse } from 'models/responses/test-preset-history/test-preset-history-response.model';
+import { TestPresetsHistoryResponse } from 'models/responses/test-preset-history/test-presets-history-response.model';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTestPresetHistoryInput } from './dto/create-test-preset-history.input';
+import { UserTestPresetsHistoryInput } from './dto/user-test-presets-history.input';
 
 @Injectable()
 export class TestPresetHistoryService {
@@ -27,6 +29,35 @@ export class TestPresetHistoryService {
     });
     if (testPresetHistory) {
       return { testPresetHistory };
+    }
+  }
+
+  async userTestPresetsHistory(
+    input: UserTestPresetsHistoryInput,
+  ): Promise<TestPresetsHistoryResponse> {
+    try {
+      const historyPresets = await this.prisma.testPresetHistory.findMany({
+        where: { user: { username: { equals: input.username } } },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Valid results
+      if (historyPresets.length > 0) {
+        return { testPresetHistory: historyPresets };
+      } else
+        return {
+          testPresetHistory: [],
+        };
+    } catch (error) {
+      return {
+        testPresetHistory: [],
+        errors: [
+          {
+            field: 'input',
+            message: 'An error occurred!',
+          },
+        ],
+      };
     }
   }
 }
