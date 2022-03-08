@@ -47,22 +47,24 @@ export class UserService {
         ],
       };
     }
-    try {
-      const userID: string = context.req.session.passport.user;
-      const user = await this.prisma.user.findUnique({
-        where: { id: userID },
-        include: { testPresetHistory: true, testPresets: true },
-      });
-      const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
-        return {
-          ...preset,
-          type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-          language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-        };
-      });
+
+    const userID: string = context.req.session.passport.user;
+    const user = await this.prisma.user.findUnique({
+      where: { id: userID },
+      // include: { testPresetHistory: true, testPresets: true },
+    });
+
+    if (user) {
+      // const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
+      //   return {
+      //     ...preset,
+      //     type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
+      //     language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
+      //   };
+      // });
       const parsedUser: User = {
         ...user,
-        testPresets: parsedPresets,
+        // testPresets: parsedPresets,
         badge:
           user.badge === 'DEFAULT'
             ? UserBadge.DEFAULT
@@ -79,8 +81,9 @@ export class UserService {
             : AuthProvider.GOOGLE,
       };
       return { user: parsedUser };
-    } catch (error) {
+    } else {
       return {
+        user: null,
         errors: [
           {
             field: 'user',

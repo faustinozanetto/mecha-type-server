@@ -74,7 +74,6 @@ async function main() {
         time: 0,
       },
     });
-    console.log(testPreset);
   }
 }
 

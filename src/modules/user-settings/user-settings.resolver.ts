@@ -12,7 +12,6 @@ import { UserSettingsService } from './user-settings.service';
 export class UserSettingsResolver {
   constructor(private readonly userSettingsService: UserSettingsService) {}
 
-  @UseGuards(GraphQLAuthGuard)
   @Query(() => UserSettingsResponse)
   async userSettings(
     @Args('input', { type: () => UserSettingsWhereInput }) input: UserSettingsWhereInput,

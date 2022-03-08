@@ -83,7 +83,7 @@ export class AuthController {
           reject(err);
         }
         req.logout();
-        res.send(200);
+        res.sendStatus(200);
       });
     });
 

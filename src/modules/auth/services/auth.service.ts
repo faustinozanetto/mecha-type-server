@@ -14,14 +14,12 @@ export class AuthService implements AuthenticationProvider {
         where: { oauthId: details.oauthId },
       });
       if (userExists) {
-        console.log('Updating user: ', details.username);
         const updatedUser = await this.prisma.user.update({
           where: { oauthId: details.oauthId },
           data: details,
         });
         return updatedUser;
       } else {
-        console.log('Creating user: ', details.username);
         return this.createUser(details);
       }
     } catch (error) {}

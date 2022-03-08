@@ -40,7 +40,6 @@ export class TestPresetHistoryService {
         where: { user: { username: { equals: input.username } } },
         orderBy: { createdAt: 'desc' },
       });
-
       // Valid results
       if (historyPresets.length > 0) {
         return { testPresetHistory: historyPresets };
