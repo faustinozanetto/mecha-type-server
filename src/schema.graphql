@@ -433,6 +433,7 @@ input UserSettingsUpdateInput {
 input UserSettingsWhereInput {
   id: String
   userId: String
+  username: String
 }
 
 input UserTestPresetsHistoryInput {

@@ -28,7 +28,7 @@ export class GqlConfigService implements GqlOptionsFactory {
       introspection: true,
       debug: true,
       playground: true,
-      context: ({ req, res }: MechaContext) => ({ req, res, passport: req.session.passport }),
+      context: ({ req, res }: MechaContext) => ({ req, res }),
     };
   }
 }

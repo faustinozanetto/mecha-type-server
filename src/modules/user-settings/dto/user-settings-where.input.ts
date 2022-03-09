@@ -7,4 +7,7 @@ export class UserSettingsWhereInput {
 
   @Field(() => String, { nullable: true })
   userId?: string;
+
+  @Field(() => String, { nullable: true })
+  username?: string;
 }

@@ -38,34 +38,31 @@ export class UserService {
    * @returns The user response containing the user and or errors.
    */
   async me(context: MechaContext): Promise<UserResponse> {
-    if (!context.req) {
+    // const userID: string = context.req.session.passport.user;
+    // console.log(context?.req?.session?.passport?.user);
+    // console.log(context.req);
+    if (context?.req?.user) {
+      return {
+        user: context.req.user as User,
+      };
+    } else {
       return {
         errors: [
           {
-            field: 'user',
-            message: 'An error ocurred',
+            field: 'me',
+            message: 'An error occurred while trying to fetch user.',
           },
         ],
       };
     }
-
-    const userID: string = context.req.session.passport.user;
+    /*
     const user = await this.prisma.user.findUnique({
       where: { id: userID },
-      // include: { testPresetHistory: true, testPresets: true },
     });
 
     if (user) {
-      // const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
-      //   return {
-      //     ...preset,
-      //     type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-      //     language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-      //   };
-      // });
       const parsedUser: User = {
         ...user,
-        // testPresets: parsedPresets,
         badge:
           user.badge === 'DEFAULT'
             ? UserBadge.DEFAULT
@@ -93,6 +90,7 @@ export class UserService {
         ],
       };
     }
+    */
   }
 
   async logout(context: MechaContext) {

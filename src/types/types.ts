@@ -1,7 +1,6 @@
 import { User } from '@prisma/client';
 import { Response, Request } from 'express';
 import { AuthProvider } from 'models/user/user.model';
-import { PassportStatic } from 'passport';
 
 export type UserDetails = {
   username: string;
@@ -18,7 +17,7 @@ export type UserStatus = {
 };
 
 export type MechaContext = {
-  req: Request & any;
+  req: Request;
   res: Response;
 };
 

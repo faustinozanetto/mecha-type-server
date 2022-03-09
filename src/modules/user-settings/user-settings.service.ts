@@ -25,14 +25,16 @@ export class UserSettingsService {
     // If no input is given, return the default settings
     if (input.userId === '') return { userSettings: emptySettings };
     // If valid input try to find it.
-    const userSettings = await this.prisma.userSettings.findUnique({
-      where: input,
+    const userSettings = await this.prisma.userSettings.findMany({
+      where: {
+        user: { username: input.username },
+      },
     });
     // Not settings found, we create one.
-    if (!userSettings) {
+    if (userSettings.length === 0) {
       const createdSettings = await this.prisma.userSettings.create({
         data: {
-          user: { connect: { id: input.userId } },
+          user: { connect: { username: input.username } },
           blindMode: false,
           noBackspace: false,
           pauseOnError: false,
@@ -51,8 +53,8 @@ export class UserSettingsService {
     }
     return {
       userSettings: {
-        ...userSettings,
-        caretStyle: parsePrismaCaretStyle(userSettings.caretStyle),
+        ...userSettings[0],
+        caretStyle: parsePrismaCaretStyle(userSettings[0].caretStyle),
       },
     };
   }
