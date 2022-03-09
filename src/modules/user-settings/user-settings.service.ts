@@ -23,7 +23,7 @@ export class UserSettingsService {
       typeSoundsVolume: 0.0,
     };
     // If no input is given, return the default settings
-    if (!input.userId || !input.id) return { userSettings: emptySettings };
+    if (input.userId === '') return { userSettings: emptySettings };
     // If valid input try to find it.
     const userSettings = await this.prisma.userSettings.findUnique({
       where: input,
