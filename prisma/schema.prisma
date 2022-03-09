@@ -110,6 +110,11 @@ model UserSettings {
   @@unique([userId])
 }
 
+enum TestContent {
+  RANDOM
+  QUOTE
+}
+
 enum TestType {
   WORDS
   TIME
@@ -124,6 +129,7 @@ model TestPreset {
   id                String              @id @default(cuid())
   type              TestType            @default(WORDS)
   language          TestLanguage        @default(ENGLISH)
+  content           TestContent         @default(RANDOM)
   time              Int                 @default(0)
   words             Int                 @default(25)
   punctuated        Boolean             @default(false)

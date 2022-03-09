@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { TestLanguage, TestType } from 'models/test-preset/test-preset.model';
+import { TestContent, TestLanguage, TestType } from 'models/test-preset/test-preset.model';
 
 @InputType()
 export class CreateTestPresetInput {
@@ -17,6 +17,10 @@ export class CreateTestPresetInput {
   @Field(() => TestLanguage)
   @IsNotEmpty()
   language: TestLanguage;
+
+  @Field(() => TestContent)
+  @IsNotEmpty()
+  content: TestContent;
 
   @Field(() => Int)
   @IsNotEmpty()

@@ -53,6 +53,7 @@ input CreateTestPresetHistoryInput {
 }
 
 input CreateTestPresetInput {
+  content: TestContent!
   creatorImage: String
   language: TestLanguage!
   punctuated: Boolean!
@@ -178,6 +179,12 @@ type RequestFollowUserResponse {
   requestSent: Boolean
 }
 
+"""Test Content"""
+enum TestContent {
+  QUOTE
+  RANDOM
+}
+
 """Test Language"""
 enum TestLanguage {
   ENGLISH
@@ -185,6 +192,8 @@ enum TestLanguage {
 }
 
 type TestPreset {
+  content: TestContent
+
   """Identifies the date and time when the object was created."""
   createdAt: Date
   creator: User!
@@ -230,6 +239,7 @@ type TestPresetResponse {
 }
 
 input TestPresetWhereInput {
+  content: TestContent
   id: String
   language: TestLanguage
   punctuated: Boolean

@@ -26,6 +26,7 @@ import { FollowStatus } from '.prisma/client';
 import { AcceptFollowRequestResponse } from 'models/responses/user/accept-follow-user.response';
 import { DenyFollowRequestResponse } from 'models/responses/user/deny-follow-user.response';
 import { FilterUsersInput } from './dto/filter-users.input';
+import { parsePrismaTestPreset } from 'modules/test-presets/test-preset.helper';
 
 @Injectable()
 export class UserService {
@@ -125,14 +126,6 @@ export class UserService {
     }
 
     if (user?.id !== undefined) {
-      const parsedPresets: TestPreset[] = user?.testPresets.map((preset) => {
-        return {
-          ...preset,
-          type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-          language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-        };
-      });
-
       const parsedUser: User = {
         ...user,
         badge:
@@ -149,7 +142,7 @@ export class UserService {
             : user.authProvider === 'GITHUB'
             ? AuthProvider.GITHUB
             : AuthProvider.GOOGLE,
-        testPresets: parsedPresets,
+        testPresets: user?.testPresets.map((preset) => parsePrismaTestPreset(preset)),
       };
 
       return { user: parsedUser };
@@ -319,15 +312,6 @@ export class UserService {
         ],
       };
     }
-
-    const parsedPresets: TestPreset[] = updatedUser.testPresets.map((preset) => {
-      return {
-        ...preset,
-        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-      };
-    });
-
     const parsedUser: User = {
       ...updatedUser,
       badge:
@@ -344,7 +328,7 @@ export class UserService {
           : updatedUser.authProvider === 'GITHUB'
           ? AuthProvider.GITHUB
           : AuthProvider.GOOGLE,
-      testPresets: parsedPresets,
+      testPresets: updatedUser?.testPresets.map((preset) => parsePrismaTestPreset(preset)),
     };
 
     return { user: parsedUser };

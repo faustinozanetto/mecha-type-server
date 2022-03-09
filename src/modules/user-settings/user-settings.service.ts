@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserSettingsResponse } from 'models/responses/user-settings/user-settings.response';
-import { CaretStyle } from 'models/user-settings/user-settings.model';
+import { CaretStyle, UserSettings } from 'models/user-settings/user-settings.model';
 import { PrismaService } from 'nestjs-prisma';
 import { parseModelCaretStyle, parsePrismaCaretStyle } from 'utils/helper-functions';
 import { UserSettingsCreateInput } from './dto/user-settings-create.input';
@@ -12,6 +12,19 @@ export class UserSettingsService {
   constructor(private prisma: PrismaService) {}
 
   async userSettings(input: UserSettingsWhereInput): Promise<UserSettingsResponse> {
+    const emptySettings: UserSettings = {
+      id: '',
+      blindMode: false,
+      noBackspace: false,
+      pauseOnError: false,
+      typeSounds: false,
+      caretStyle: CaretStyle.LINE,
+      caretColor: '#ffb300',
+      typeSoundsVolume: 0.0,
+    };
+    // If no input is given, return the default settings
+    if (!input.userId || !input.id) return { userSettings: emptySettings };
+    // If valid input try to find it.
     const userSettings = await this.prisma.userSettings.findUnique({
       where: input,
     });

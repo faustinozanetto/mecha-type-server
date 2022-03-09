@@ -21,6 +21,16 @@ registerEnumType(TestLanguage, {
   description: 'Test Language',
 });
 
+export enum TestContent {
+  RANDOM = 'RANDOM',
+  QUOTE = 'QUOTE',
+}
+
+registerEnumType(TestContent, {
+  name: 'TestContent',
+  description: 'Test Content',
+});
+
 @ObjectType()
 export class TestPreset extends BaseModel {
   @Field(() => TestType, { nullable: true })
@@ -28,6 +38,9 @@ export class TestPreset extends BaseModel {
 
   @Field(() => TestLanguage, { nullable: true })
   language?: TestLanguage;
+
+  @Field(() => TestContent, { nullable: true })
+  content?: TestContent;
 
   @Field(() => Int, { nullable: true })
   time?: number;

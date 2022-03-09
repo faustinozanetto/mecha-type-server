@@ -5,13 +5,14 @@ import {
   TestPresetsResponse,
 } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
-import { TestLanguage, TestPreset, TestType } from 'models/test-preset/test-preset.model';
+import { TestContent, TestLanguage, TestType } from 'models/test-preset/test-preset.model';
 import { AuthProvider, UserBadge } from 'models/user/user.model';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTestPresetInput } from 'modules/test-presets/dto/create-test-preset.input';
 import { TestPresetsFindInput } from 'modules/test-presets/dto/test-presets-find.input';
 import { CopyPresetToUserInput } from './dto/copy-preset-to-user.input';
 import { UserTestPresetsInput } from './dto/user-test-presets.input';
+import { parsePrismaTestPreset } from './test-preset.helper';
 
 @Injectable()
 export class TestPresetService {
@@ -46,11 +47,7 @@ export class TestPresetService {
       where: { id: id ?? '' },
     });
     return {
-      testPreset: {
-        ...preset,
-        type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-        language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-      },
+      testPreset: parsePrismaTestPreset(preset),
     };
   }
 
@@ -59,6 +56,7 @@ export class TestPresetService {
       take: input.take,
       skip: input.skip,
       where: {
+        content: input.where.content,
         id: input.where.id,
         language: input.where.language,
         type: input.where.type,
@@ -105,11 +103,7 @@ export class TestPresetService {
     const mapped: TestPresetsEdge[] = edges.map((edge) => {
       return {
         cursor: edge.cursor,
-        node: {
-          ...edge.node,
-          type: edge.node.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-          language: edge.node.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-        },
+        node: parsePrismaTestPreset(edge.node),
       };
     });
 
@@ -162,11 +156,7 @@ export class TestPresetService {
     const edges: TestPresetsEdge[] = presets.map((edge) => {
       return {
         cursor: edge.createdAt,
-        node: {
-          ...edge,
-          type: edge.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-          language: edge.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-        },
+        node: parsePrismaTestPreset(edge),
       };
     });
 
@@ -193,17 +183,14 @@ export class TestPresetService {
             punctuated: presetToCopy.punctuated,
             words: presetToCopy.words,
             time: presetToCopy.time,
-
+            language: presetToCopy.language,
+            content: presetToCopy.content,
             user: { connect: { ...input.user } },
           },
         });
-        const parsedPreset = {
-          ...newPreset,
-          type: newPreset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-          language: newPreset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-        };
+
         return {
-          testPreset: parsedPreset,
+          testPreset: parsePrismaTestPreset(newPreset),
         };
       } else {
         return {
@@ -235,16 +222,12 @@ export class TestPresetService {
         words: data.words,
         time: data.time,
         punctuated: data.punctuated,
+        content: data.content,
         creatorImage: 'https://i.imgur.com/xuIzYtW.png',
       },
     });
 
-    const parsedPreset = {
-      ...preset,
-      type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-      language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-    };
-    return { testPreset: parsedPreset };
+    return { testPreset: parsePrismaTestPreset(preset) };
   }
 
   async createTestPresetUser(data: CreateTestPresetInput): Promise<TestPresetResponse> {
@@ -255,6 +238,7 @@ export class TestPresetService {
         words: data.words,
         time: data.time,
         punctuated: data.punctuated,
+        content: data.content,
         creatorImage: data.creatorImage,
         user: {
           connect: {
@@ -273,11 +257,7 @@ export class TestPresetService {
         ],
       };
     }
-    const parsedPreset = {
-      ...preset,
-      type: preset.type === 'TIME' ? TestType.TIME : TestType.WORDS,
-      language: preset.language === 'ENGLISH' ? TestLanguage.ENGLISH : TestLanguage.SPANISH,
-    };
-    return { testPreset: parsedPreset };
+
+    return { testPreset: parsePrismaTestPreset(preset) };
   }
 }
