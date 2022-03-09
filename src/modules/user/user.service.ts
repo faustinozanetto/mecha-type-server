@@ -149,18 +149,7 @@ export class UserService {
     }
   }
 
-  async users(take: number): Promise<UsersResponse> {
-    if (!take) {
-      return {
-        errors: [
-          {
-            field: 'take',
-            message: 'Invalid take parameter',
-          },
-        ],
-      };
-    }
-
+  async users(take?: number): Promise<UsersResponse> {
     const users = await this.prisma.user.findMany({
       take,
       where: {},

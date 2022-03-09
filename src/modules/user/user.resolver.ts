@@ -48,7 +48,9 @@ export class UserResolver {
   }
 
   @Query(() => UsersResponse)
-  async users(@Args('take', { type: () => Int }) take: number): Promise<UsersResponse> {
+  async users(
+    @Args('take', { type: () => Int, nullable: true }) take: number,
+  ): Promise<UsersResponse> {
     return await this.userService.users(take);
   }
 

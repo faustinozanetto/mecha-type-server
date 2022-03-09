@@ -171,7 +171,7 @@ type Query {
   userSettings(input: UserSettingsWhereInput!): UserSettingsResponse!
   userTestPresets(input: UserTestPresetsInput!): TestPresetsResponse!
   userTestPresetsHistory(input: UserTestPresetsHistoryInput!): TestPresetsHistoryResponse!
-  users(take: Int!): UsersResponse!
+  users(take: Int): UsersResponse!
 }
 
 type RequestFollowUserResponse {
