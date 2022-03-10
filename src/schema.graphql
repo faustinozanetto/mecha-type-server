@@ -165,6 +165,7 @@ type Query {
   followUserStatus(followerId: String!, userId: String!): FollowUserStatusResponse!
   me: UserResponse!
   testPreset(id: String!): TestPresetResponse!
+  testPresetAll: [TestPreset!]!
   testPresets(input: TestPresetsFindInput): TestPresetsResponse!
   user(where: UserWhereInput!): UserResponse!
   userFollowers(input: UserFollowersFindInput!): UserFollowersResponse!

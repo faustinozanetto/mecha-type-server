@@ -26,6 +26,11 @@ export class TestPresetResolver {
     return await this.testPresetService.testPreset(id);
   }
 
+  @Query(() => [TestPreset])
+  async testPresetAll(): Promise<TestPreset[]> {
+    return await this.testPresetService.testPresetsAll();
+  }
+
   @Query(() => TestPresetsResponse)
   async testPresets(
     @Args('input', { nullable: true, type: () => TestPresetsFindInput })

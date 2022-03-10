@@ -51,10 +51,7 @@ export class Logger {
           break;
       }
     } catch (error) {
-      console.error(
-        this.getPrefix() +
-          'There has been an error while trying to log a message!'
-      );
+      console.error(this.getPrefix() + 'There has been an error while trying to log a message!');
     }
   }
 }

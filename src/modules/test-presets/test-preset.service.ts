@@ -5,7 +5,12 @@ import {
   TestPresetsResponse,
 } from 'models/responses/test-preset/test-presets-response.model';
 import { UserResponse } from 'models/responses/user/user-response.model';
-import { TestContent, TestLanguage, TestType } from 'models/test-preset/test-preset.model';
+import {
+  TestContent,
+  TestLanguage,
+  TestPreset,
+  TestType,
+} from 'models/test-preset/test-preset.model';
 import { AuthProvider, UserBadge } from 'models/user/user.model';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTestPresetInput } from 'modules/test-presets/dto/create-test-preset.input';
@@ -49,6 +54,12 @@ export class TestPresetService {
     return {
       testPreset: parsePrismaTestPreset(preset),
     };
+  }
+
+  async testPresetsAll(): Promise<TestPreset[]> {
+    const presets = await this.prisma.testPreset.findMany({});
+
+    return presets.map((preset) => parsePrismaTestPreset(preset));
   }
 
   async testPresets(input: TestPresetsFindInput): Promise<TestPresetsResponse> {
