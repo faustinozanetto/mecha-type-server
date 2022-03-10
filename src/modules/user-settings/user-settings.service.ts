@@ -22,41 +22,45 @@ export class UserSettingsService {
       caretColor: '#ffb300',
       typeSoundsVolume: 0.0,
     };
-    // If no input is given, return the default settings
-    if (input.userId === '') return { userSettings: emptySettings };
-    // If valid input try to find it.
-    const userSettings = await this.prisma.userSettings.findMany({
-      where: {
-        user: { username: input.username },
-      },
-    });
-    // Not settings found, we create one.
-    if (userSettings.length === 0) {
-      const createdSettings = await this.prisma.userSettings.create({
-        data: {
-          user: { connect: { username: input.username } },
-          blindMode: false,
-          noBackspace: false,
-          pauseOnError: false,
-          typeSounds: false,
-          caretStyle: 'LINE',
-          caretColor: '#ffb300',
-          typeSoundsVolume: 0.0,
+    try {
+      // If valid input try to find it.
+      const userSettings = await this.prisma.userSettings.findMany({
+        where: {
+          user: { username: input.username },
         },
       });
+      // Not settings found, we create one.
+      if (!userSettings.length) {
+        const createdSettings = await this.prisma.userSettings.create({
+          data: {
+            user: { connect: { username: input.username } },
+            blindMode: false,
+            noBackspace: false,
+            pauseOnError: false,
+            typeSounds: false,
+            caretStyle: 'LINE',
+            caretColor: '#ffb300',
+            typeSoundsVolume: 0.0,
+          },
+        });
+        return {
+          userSettings: {
+            ...createdSettings,
+            caretStyle: parsePrismaCaretStyle(createdSettings.caretStyle),
+          },
+        };
+      }
       return {
         userSettings: {
-          ...createdSettings,
-          caretStyle: parsePrismaCaretStyle(createdSettings.caretStyle),
+          ...userSettings[0],
+          caretStyle: parsePrismaCaretStyle(userSettings[0].caretStyle),
         },
       };
+    } catch (err) {
+      return {
+        userSettings: emptySettings,
+      };
     }
-    return {
-      userSettings: {
-        ...userSettings[0],
-        caretStyle: parsePrismaCaretStyle(userSettings[0].caretStyle),
-      },
-    };
   }
 
   async createUserSettings(input: UserSettingsCreateInput): Promise<UserSettingsResponse> {
