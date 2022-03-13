@@ -21,6 +21,7 @@ enum AuthProvider {
   DISCORD
   GITHUB
   GOOGLE
+  LOCAL
 }
 
 enum FollowStatus {

@@ -4,9 +4,11 @@ import {
   DiscordAuthGuard,
   GithubAuthGuard,
   GoogleAuthGuard,
+  LocalAuthGuard,
 } from 'modules/auth/utils/guards';
 import { Response, Request } from 'express';
 import { __AUTH_REDIRECT__, __ORIGIN__, __URL__ } from 'utils/constants';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller({
   path: 'auth',
@@ -44,6 +46,16 @@ export class AuthController {
   }
 
   /**
+   * GET /api/auth/local/login
+   * This is the route the user will visit to authenticate with github
+   */
+  @Get('/local/login')
+  @UseGuards(AuthGuard('local'))
+  localLogin() {
+    return;
+  }
+
+  /**
    * GET /api/auth/google/redirect
    * This is the redirect URL the OAuth2 Provider will call for google.
    */
@@ -60,6 +72,16 @@ export class AuthController {
   @Get('/discord/redirect')
   @UseGuards(DiscordAuthGuard)
   discordRedirect(@Res() res: Response) {
+    res.redirect(__AUTH_REDIRECT__ as string);
+  }
+
+  /**
+   * GET /api/auth/local/redirect
+   * This is the redirect URL the OAuth2 Provider will call for discord
+   */
+  @Get('/local/redirect')
+  @UseGuards(AuthGuard('local'))
+  localRedirect(@Res() res: Response) {
     res.redirect(__AUTH_REDIRECT__ as string);
   }
 

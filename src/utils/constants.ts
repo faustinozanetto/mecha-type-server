@@ -25,6 +25,9 @@ export const __AUTH_REDIRECT__: string = __ORIGIN__ + '/practice';
 export const __DISCORD_CALLBACK__: string = __PROD__
   ? __URL__ + process.env.DISCORD_CALLBACK_URL
   : process.env.DISCORD_CALLBACK_URL;
+export const __LOCAL_CALLBACK__: string = __PROD__
+  ? __URL__ + process.env.LOCAL_CALLBACK_URL
+  : process.env.LOCAL_CALLBACK_URL;
 export const __GITHUB_CALLBACK__: string = __PROD__
   ? __URL__ + process.env.GITHUB_CALLBACK_URL
   : process.env.GITHUB_CALLBACK_URL;

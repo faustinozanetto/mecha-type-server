@@ -23,7 +23,7 @@ export class GoogleAuthGuard extends AuthGuard('google') {
 }
 
 @Injectable()
-export class SteamAuthGuard extends AuthGuard('steam') {
+export class LocalAuthGuard extends AuthGuard('local') {
   async canActivate(context: ExecutionContext) {
     const activate = (await super.canActivate(context)) as boolean;
     const request = context.switchToHttp().getRequest();

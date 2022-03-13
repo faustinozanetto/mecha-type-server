@@ -20,6 +20,7 @@ enum AuthProvider {
   DISCORD
   GITHUB
   GOOGLE
+  LOCAL
 }
 
 """Style of the Caret"""

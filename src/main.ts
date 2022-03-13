@@ -46,12 +46,7 @@ async function bootstrap() {
   /*========= SESSION =========*/
   //const prisma = new PrismaClient();
   const RedisStore = connectRedis(session);
-  const redis = new Redis({
-    host: process.env.REDIS_HOST as string,
-    username: process.env.REDIS_USER as string,
-    password: process.env.REDIS_PASS as string,
-    port: Number(process.env.REDIS_PORT),
-  });
+  const redis = new Redis(process.env.REDIS_URI as string);
   const developmentCookie: session.CookieOptions = {
     sameSite: false,
     maxAge: 7 * 24 * 60 * 60 * 1000,

@@ -30,6 +30,7 @@ registerEnumType(UserBadge, {
 
 export enum AuthProvider {
   DEFAULT = 'DEFAULT',
+  LOCAL = 'LOCAL',
   DISCORD = 'DISCORD',
   GITHUB = 'GITHUB',
   GOOGLE = 'GOOGLE',
